@@ -2,7 +2,6 @@ import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_app/models/weather_state.dart';
 import 'package:weather_app/services/location_service.dart';
