@@ -8,7 +8,14 @@ class WeatherApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Weather App',
-      theme: ThemeData.dark(),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.cyan,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
       home: const WeatherPage(title: 'Flutter Demo Home Page'),
     );
   }
