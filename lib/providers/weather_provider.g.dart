@@ -6,12 +6,12 @@ part of 'weather_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$weatherNotifierHash() => r'8f3a9c98d7028c8f6159f679b538ea4e33690122';
+String _$weatherNotifierHash() => r'87436a2dfa3a54dcc64249ced628a2649800e334';
 
 /// See also [WeatherNotifier].
 @ProviderFor(WeatherNotifier)
 final weatherNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<WeatherNotifier, WeatherData>.internal(
+    AutoDisposeAsyncNotifierProvider<WeatherNotifier, WeatherState>.internal(
       WeatherNotifier.new,
       name: r'weatherNotifierProvider',
       debugGetCreateSourceHash:
@@ -22,6 +22,6 @@ final weatherNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$WeatherNotifier = AutoDisposeAsyncNotifier<WeatherData>;
+typedef _$WeatherNotifier = AutoDisposeAsyncNotifier<WeatherState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

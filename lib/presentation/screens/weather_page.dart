@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/providers/weather_provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final Logger _log = Logger('WeatherPage');
 
@@ -14,29 +15,86 @@ class WeatherPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final weatherState = ref.watch(weatherNotifierProvider);
+    final weatherNotifier = ref.read(weatherNotifierProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.appTitle)),
       body: Center(
         child: weatherState.when(
           data:
-              (data) => Column(
+              (state) => Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 20,
                 children: [
+                  // Standort anzeigen
                   Text(
-                    AppStrings.currentTemperature(data.temperature),
-                    style: const TextStyle(fontSize: 24),
+                    "Wetter in ${state.weatherData?.location ?? 'Unbekannt'}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed:
-                        () =>
-                            ref
-                                .read(weatherNotifierProvider.notifier)
-                                .refreshWeather(),
-                    child: const Text(AppStrings.updateWeather),
+
+                  // Dropdown-Menü für Stadtwahl & aktuellen Standort
+                  DropdownButton<String>(
+                    value: state.selectedCity,
+                    onChanged: (String? newCity) {
+                      if (newCity != null) {
+                        weatherNotifier.updateCity(newCity);
+                      }
+                    },
+                    items: [
+                      const DropdownMenuItem(
+                        value: 'Aktueller Standort',
+                        child: Text('Aktueller Standort'),
+                      ),
+                      ...WeatherNotifier.cities.keys.map(
+                        (city) =>
+                            DropdownMenuItem(value: city, child: Text(city)),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
+
+                  state.weatherData != null
+                      ? Column(
+                        spacing: 32,
+                        children: [
+                          Text(
+                            AppStrings.currentTemperature(
+                              state.weatherData!.temperature,
+                            ),
+                            style: const TextStyle(fontSize: 24),
+                          ),
+
+                          ElevatedButton(
+                            onPressed:
+                                () =>
+                                    ref
+                                        .read(weatherNotifierProvider.notifier)
+                                        .refreshWeather(),
+                            child: const Text(AppStrings.updateWeather),
+                          ),
+                        ],
+                      )
+                      : Column(
+                        spacing: 32,
+                        children: [
+                          const Text(
+                            'Keine Wetterdaten verfügbar. Bitte aktualisieren.',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          ElevatedButton(
+                            onPressed:
+                                () =>
+                                    ref
+                                        .read(weatherNotifierProvider.notifier)
+                                        .refreshWeather(),
+                            child: const Text('Wetter abrufen'),
+                          ),
+                        ],
+                      ),
+
+                  // 🗑️ Historie löschen Button
                   ElevatedButton(
                     onPressed:
                         () =>
@@ -57,7 +115,6 @@ class WeatherPage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Fehler: $err', style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed:
                       () =>
