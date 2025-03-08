@@ -1,17 +1,19 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-final Logger _log = Logger('LocationService');
+final _log = Logger('LocationService');
 
 class LocationService {
-  // 🔑 Schlüssel für gespeicherte Standortwerte in SharedPreferences
+  // 🔑 Keys für gespeicherte Standortwerte in SharedPreferences
   static const String latitudeKey = 'latitude';
   static const String longitudeKey = 'longitude';
   static const String useGeolocationKey = 'useGeolocation';
+  static const String locationNameKey = 'locationName';
 
-  /// 📍 Holt die aktuelle Position des Geräts
-  /// Falls Standortdienste deaktiviert oder Berechtigungen verweigert sind, wird ein Fehler zurückgegeben
+  /// 📍 Holt die aktuelle Position des Geräts mit Berechtigungsprüfung
   static Future<Position> determinePosition() async {
     _log.info('Überprüfe Standortdienste...');
     final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -23,7 +25,6 @@ class LocationService {
     _log.info('Überprüfe Standort-Berechtigungen...');
     LocationPermission permission = await Geolocator.checkPermission();
 
-    // Falls keine Berechtigung erteilt wurde, fragen wir erneut nach
     if (permission == LocationPermission.denied) {
       _log.warning(
         'Standort-Berechtigungen wurden abgelehnt, fordere erneut an...',
@@ -35,7 +36,6 @@ class LocationService {
       }
     }
 
-    // Falls Berechtigungen dauerhaft verweigert wurden, kann die App den Standort nicht abrufen
     if (permission == LocationPermission.deniedForever) {
       _log.severe(
         'Standort-Berechtigung dauerhaft verweigert. Manuelle Aktivierung in den Einstellungen erforderlich.',
@@ -53,15 +53,17 @@ class LocationService {
     double latitude,
     double longitude,
     bool useGeolocation,
+    String locationName,
   ) async {
     _log.info(
-      'Speichere letzte bekannte Position: Lat=$latitude, Lon=$longitude, useGeolocation=$useGeolocation...',
+      'Speichere letzte bekannte Position: Lat=$latitude, Lon=$longitude, useGeolocation=$useGeolocation, Location=$locationName...',
     );
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setDouble(latitudeKey, latitude);
     await prefs.setDouble(longitudeKey, longitude);
     await prefs.setBool(useGeolocationKey, useGeolocation);
+    await prefs.setString(locationNameKey, locationName);
 
     _log.info('Standort erfolgreich gespeichert.');
   }
@@ -72,7 +74,6 @@ class LocationService {
     _log.info('Lade letzte bekannte Position aus SharedPreferences...');
     final prefs = await SharedPreferences.getInstance();
 
-    // Falls kein gespeicherter Standort vorhanden ist, wird `null` zurückgegeben
     if (!prefs.containsKey(latitudeKey) || !prefs.containsKey(longitudeKey)) {
       _log.warning('Keine gespeicherte Position gefunden.');
       return null;
@@ -81,14 +82,60 @@ class LocationService {
     final latitude = prefs.getDouble(latitudeKey)!;
     final longitude = prefs.getDouble(longitudeKey)!;
     final useGeolocation = prefs.getBool(useGeolocationKey) ?? true;
+    final locationName = prefs.getString(locationNameKey) ?? 'Unbekannter Ort';
 
     _log.info(
-      'Gespeicherte Position geladen: Lat=$latitude, Lon=$longitude, useGeolocation=$useGeolocation.',
+      'Gespeicherte Position geladen: Lat=$latitude, Lon=$longitude, useGeolocation=$useGeolocation, Location=$locationName.',
     );
     return {
       'latitude': latitude,
       'longitude': longitude,
       'useGeolocation': useGeolocation,
+      'locationName': locationName,
     };
+  }
+
+  /// 🔄 Wandelt Koordinaten in einen echten Ortsnamen um (Reverse Geocoding) mit Fehlerhandling
+  static Future<String> getLocationName(
+    double latitude,
+    double longitude,
+  ) async {
+    try {
+      _log.info('Reverse Geocoding für Lat=$latitude, Lon=$longitude...');
+      final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude',
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // 🔍 Versuche, die Stadt / den Ort aus der Antwort zu extrahieren
+        final String? city =
+            data['address']?['city'] ??
+            data['address']?['town'] ??
+            data['address']?['village'];
+        final String? country = data['address']?['country'];
+
+        if (city != null && country != null) {
+          _log.info('Standort ermittelt: $city, $country');
+          return '$city, $country';
+        } else {
+          _log.warning(
+            'Kein genauer Ortsname gefunden. Rückgabe: "Unbekannter Ort"',
+          );
+          return 'Unbekannter Ort';
+        }
+      } else {
+        _log.severe(
+          'Reverse Geocoding fehlgeschlagen! HTTP-Status: ${response.statusCode}',
+        );
+        return 'Ort nicht gefunden';
+      }
+    } catch (e) {
+      _log.severe('Fehler beim Reverse Geocoding: $e');
+      return 'Ort konnte nicht bestimmt werden';
+    }
   }
 }

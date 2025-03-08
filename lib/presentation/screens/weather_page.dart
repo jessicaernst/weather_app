@@ -26,18 +26,24 @@ class WeatherPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 20,
                 children: [
-                  // Standort anzeigen
+                  // 🌍 Standort anzeigen
                   Text(
-                    "Wetter in ${state.weatherData?.location ?? 'Unbekannt'}",
+                    'Wetter in ${state.selectedCity}',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  // Dropdown-Menü für Stadtwahl & aktuellen Standort
+                  // 🌟 Dropdown-Menü für Stadtwahl & aktuellen Standort
                   DropdownButton<String>(
-                    value: state.selectedCity,
+                    value:
+                        WeatherNotifier.cities.containsKey(
+                                  state.selectedCity,
+                                ) ||
+                                state.selectedCity == 'Aktueller Standort'
+                            ? state.selectedCity
+                            : 'Aktueller Standort', // 🔥 Falls ein ungültiger Wert existiert, wird "Aktueller Standort" verwendet
                     onChanged: (String? newCity) {
                       if (newCity != null) {
                         weatherNotifier.updateCity(newCity);
@@ -48,16 +54,21 @@ class WeatherPage extends ConsumerWidget {
                         value: 'Aktueller Standort',
                         child: Text('Aktueller Standort'),
                       ),
-                      ...WeatherNotifier.cities.keys.map(
-                        (city) =>
-                            DropdownMenuItem(value: city, child: Text(city)),
-                      ),
+                      ...WeatherNotifier.cities.keys
+                          .where(
+                            (city) => city != 'Unbekannter Ort',
+                          ) // ❌ Doppelte Werte vermeiden
+                          .map(
+                            (city) => DropdownMenuItem(
+                              value: city,
+                              child: Text(city),
+                            ),
+                          ),
                     ],
                   ),
 
                   state.weatherData != null
                       ? Column(
-                        spacing: 32,
                         children: [
                           Text(
                             AppStrings.currentTemperature(
@@ -65,7 +76,7 @@ class WeatherPage extends ConsumerWidget {
                             ),
                             style: const TextStyle(fontSize: 24),
                           ),
-
+                          const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed:
                                 () =>
@@ -77,12 +88,12 @@ class WeatherPage extends ConsumerWidget {
                         ],
                       )
                       : Column(
-                        spacing: 32,
                         children: [
                           const Text(
                             'Keine Wetterdaten verfügbar. Bitte aktualisieren.',
                             style: TextStyle(color: Colors.grey),
                           ),
+                          const SizedBox(height: 10),
                           ElevatedButton(
                             onPressed:
                                 () =>
@@ -115,6 +126,7 @@ class WeatherPage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Fehler: $err', style: const TextStyle(color: Colors.red)),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed:
                       () =>
