@@ -21,7 +21,7 @@ class StorageService {
   ) async {
     try {
       _log.info(
-        '📌 Speichere Wetterdaten: Temperatur=$temperature°C, Zustand=$weatherCondition, Wind=${windSpeed}m/s, Luftfeuchtigkeit=${humidity}%',
+        '📌 Speichere Wetterdaten: Temperatur=$temperature°C, Zustand=$weatherCondition, Wind=${windSpeed}m/s, Luftfeuchtigkeit=$humidity%',
       );
 
       final prefs = await SharedPreferences.getInstance();
@@ -57,7 +57,7 @@ class StorageService {
       final humidity = prefs.getDouble(humidityKey) ?? 0.0;
 
       _log.info(
-        '✅ Wetterdaten geladen: Temperatur=$temperature°C, Zustand=$weatherCondition, Wind=${windSpeed}m/s, Luftfeuchtigkeit=${humidity}%',
+        '✅ Wetterdaten geladen: Temperatur=$temperature°C, Zustand=$weatherCondition, Wind=${windSpeed}m/s, Luftfeuchtigkeit=$humidity%',
       );
 
       return {
