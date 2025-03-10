@@ -160,7 +160,8 @@ Für die Möglichkeit auch kleinere Orte und Stadtteile mit ausgeben zu können 
 
 ## Screenshots:
 
-![Screenshot 2025-03-10 at 19 05 53](https://github.com/user-attachments/assets/27dd109d-22e6-46c1-8462-5d928551698b)
+![Screenshot 2025-03-10 at 19 07 16](https://github.com/user-attachments/assets/7d26706d-03cc-4b26-8820-0c177d50bf9f)
+
 
 
 
