@@ -6,7 +6,23 @@ part of 'weather_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$weatherNotifierHash() => r'58fc1420d227059fb6ad19745840f759defaf00c';
+String _$httpClientHash() => r'8c21f22632338286954dc297d3cf423520492f98';
+
+/// See also [httpClient].
+@ProviderFor(httpClient)
+final httpClientProvider = AutoDisposeProvider<http.Client>.internal(
+  httpClient,
+  name: r'httpClientProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$httpClientHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef HttpClientRef = AutoDisposeProviderRef<http.Client>;
+String _$weatherNotifierHash() => r'8a44bab8aea0c8b01ae77cc27256c008baf622c7';
 
 /// See also [WeatherNotifier].
 @ProviderFor(WeatherNotifier)
