@@ -51,14 +51,24 @@ Diese App verwendet folgende **Flutter Packages**:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_riverpod: ^2.3.2
-  hooks_riverpod: ^2.3.2
-  http: ^0.14.0
-  json_serializable: ^6.1.4
-  freezed_annotation: ^2.2.0
-  geolocator: ^9.0.2
-  shared_preferences: ^2.2.0
-  logging: ^1.1.1
+  cupertino_icons: ^1.0.8
+  build_runner: ^2.4.15
+  http: ^1.3.0
+  riverpod: ^2.6.1
+  logging: ^1.3.0
+  riverpod_lint: ^2.6.5
+  riverpod_annotation: ^2.6.1
+  flutter_riverpod: ^2.6.1
+  hooks_riverpod: ^2.6.1
+  shared_preferences: ^2.5.2
+  shimmer: ^3.0.0
+  google_fonts: ^6.2.1
+  json_serializable: ^6.9.4
+  freezed: ^3.0.3
+  freezed_lint: ^0.0.9
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+  geolocator: ^13.0.2
 ```
 
 ## 🔧 Installation & Setup
