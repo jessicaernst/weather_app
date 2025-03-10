@@ -3,6 +3,7 @@ import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather_app/core/app_strings.dart';
+import 'package:weather_app/models/daily_weather.dart';
 import 'dart:convert';
 import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_app/models/weather_state.dart';
@@ -126,6 +127,7 @@ class WeatherNotifier extends _$WeatherNotifier {
               'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude'
               '&current_weather=true'
               '&hourly=temperature_2m,precipitation_probability'
+              '&daily=temperature_2m_min,temperature_2m_max,precipitation_probability_mean,weathercode'
               '&timezone=auto',
             ),
           );
@@ -134,10 +136,11 @@ class WeatherNotifier extends _$WeatherNotifier {
         final jsonData = json.decode(response.body);
         final weatherData = jsonData['current_weather'];
         final hourlyData = jsonData['hourly'];
+        final dailyData = jsonData['daily']; // 🔥 Neu: Tägliche Daten
 
         final String timezone = jsonData['timezone'];
 
-        // 📌 Zeiten direkt als lokale Zeit verwenden
+        // **📌 Stundenwerte**
         final List<DateTime> hourlyTimes =
             List<String>.from(
               hourlyData['time'],
@@ -151,52 +154,27 @@ class WeatherNotifier extends _$WeatherNotifier {
           ),
         );
 
-        // 📌 `current_weather.time` gibt die aktuelle lokale Zeit zurück
         final DateTime nowLocal = DateTime.parse(weatherData['time']);
-
-        // 📌 Den **exakten** Index für die aktuelle Stunde finden
         int startIndex = hourlyTimes.indexWhere(
           (time) => time.hour == nowLocal.hour,
         );
+        if (startIndex == -1) startIndex = 0;
 
-        // ❗ Falls keine exakte Übereinstimmung, nehme die nächste Stunde
-        if (startIndex == -1) {
-          _log.warning(
-            '⚠️ Keine exakte Stunde gefunden, nehme nächste Stunde.',
-          );
-          startIndex = hourlyTimes.indexWhere((time) => time.isAfter(nowLocal));
-        }
-
-        // ❗ Falls der Index außerhalb des Bereichs liegt, setze ihn auf 0
-        if (startIndex == -1 || startIndex >= hourlyTemps.length) {
-          startIndex = 0;
-        }
-
-        // 📌 Falls `current_weather.temperature` stark von `hourlyTemps[startIndex]` abweicht, setze sie explizit
-        if ((hourlyTemps[startIndex] - weatherData['temperature']).abs() >
-            1.0) {
-          _log.warning(
-            '⚠️ Temperaturabweichung! Nutze `current_weather.temperature` für "Jetzt".',
-          );
-          hourlyTemps[startIndex] =
-              (weatherData['temperature'] ?? 0.0).toDouble();
-        }
-
-        _log.info('📌 Startindex für Vorhersage: $startIndex');
-
-        final List<String> filteredHourlyTimes =
-            hourlyTimes
-                .sublist(startIndex)
-                .map((dt) => dt.toIso8601String())
-                .toList();
-        final List<double> filteredHourlyTemps = hourlyTemps.sublist(
-          startIndex,
+        // **📌 Tägliche Werte**
+        final List<DailyWeather> dailyForecast = List.generate(
+          dailyData['time'].length,
+          (index) => DailyWeather(
+            date: DateTime.parse(dailyData['time'][index]),
+            minTemp: (dailyData['temperature_2m_min'][index] as num).toDouble(),
+            maxTemp: (dailyData['temperature_2m_max'][index] as num).toDouble(),
+            precipitationProbability:
+                (dailyData['precipitation_probability_mean'][index] as num)
+                    .toDouble(),
+            weatherCode:
+                dailyData['weathercode'][index]
+                    as int, // 🔥 Wetter-Code für Icons
+          ),
         );
-        final List<double> filteredHourlyRain = hourlyRain.sublist(startIndex);
-
-        _log.info('⏰ Zeiten nach Fix: $filteredHourlyTimes');
-        _log.info('🌡 Temperaturen nach Fix: $filteredHourlyTemps');
-        _log.info('🌧 Regenwahrscheinlichkeit nach Fix: $filteredHourlyRain');
 
         final weather = WeatherData(
           location: locationName,
@@ -205,10 +183,15 @@ class WeatherNotifier extends _$WeatherNotifier {
               (weatherData['weathercode'] ?? 'Unbekannt').toString(),
           windSpeed: (weatherData['windspeed'] ?? 0.0).toDouble(),
           humidity: (weatherData['relativehumidity_2m'] ?? 0.0).toDouble(),
-          hourlyTemperature: filteredHourlyTemps,
-          hourlyRainProbabilities: filteredHourlyRain,
-          hourlyTimes: filteredHourlyTimes,
+          hourlyTemperature: hourlyTemps.sublist(startIndex),
+          hourlyRainProbabilities: hourlyRain.sublist(startIndex),
+          hourlyTimes:
+              hourlyTimes
+                  .sublist(startIndex)
+                  .map((dt) => dt.toIso8601String())
+                  .toList(),
           timezone: timezone,
+          dailyWeather: dailyForecast, // ✅ Speichern der 7-Tage-Vorhersage
         );
 
         _log.info('✅ Wetterdaten für $locationName erfolgreich geladen.');

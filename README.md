@@ -149,5 +149,13 @@ void fetchWeather() {
 - **Fehlermeldung `type 'int' is not a subtype of type 'double'`?** Stelle sicher, dass du `.toDouble()` für numerische Werte in JSON verwendest.
 - **API gibt falsche Daten zurück?** Überprüfe, ob die Open-Meteo-API erreichbar ist.
 
+---
+
+**Hinweis:**
+Da es sich nur um ein Übungsprojekt handelt und es mir eher um API's und die Logik ging habe ich darauf Verzichtet TextStyles und ColorStyles auszulagern.
+
+Für die Möglichkeit auch kleinere Orte und Stadtteile mit ausgeben zu können habe ich mich für open street map entschieden beim Reverse Geocoding, ist aber aktuell nicht so weit implementiert.
+
+
 
 

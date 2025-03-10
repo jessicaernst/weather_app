@@ -52,7 +52,7 @@ class WeatherPageContent extends ConsumerWidget {
             const SizedBox(height: 32),
             HourlyForecast(weatherData: state.weatherData!),
             const SizedBox(height: 32),
-            const SevenDayForecast(),
+            SevenDayForecast(weatherData: state.weatherData!),
             const SizedBox(height: 20),
           ],
           RefreshBtn(
