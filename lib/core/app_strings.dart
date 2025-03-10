@@ -1,5 +1,5 @@
 class AppStrings {
-  static const String appTitle = 'Weather App';
+  static const String appTitle = 'Wetter App';
 
   static String currentTemperature(double temp) {
     return 'Aktuelle Temperatur: ${temp % 1 == 0 ? temp.toInt() : temp.toStringAsFixed(1)}°C';

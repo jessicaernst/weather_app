@@ -69,6 +69,7 @@ class WeatherPageContent extends StatelessWidget {
               weatherNotifier.clearHistory();
             },
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
