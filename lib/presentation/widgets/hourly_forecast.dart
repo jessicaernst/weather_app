@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/models/weather_data.dart';
 
 final Logger _logger = Logger('HourlyForecast');
@@ -19,19 +20,16 @@ class HourlyForecast extends StatelessWidget {
     if (weatherData.hourlyTemperature.isEmpty ||
         weatherData.hourlyTimes.isEmpty ||
         weatherData.hourlyRainProbabilities.isEmpty) {
-      _logger.warning('Keine stündlichen Wetterdaten verfügbar!');
+      _logger.warning(AppStrings.noWeatherData);
       return const Center(
-        child: Text(
-          'Keine stündlichen Wetterdaten verfügbar.',
-          style: TextStyle(color: Colors.grey),
-        ),
+        child: Text('', style: TextStyle(color: Colors.grey)),
       );
     }
 
     return Column(
       children: [
         const Text(
-          '⏳ Stündliche Vorhersage',
+          AppStrings.hourlyForecast,
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),

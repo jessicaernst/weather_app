@@ -31,7 +31,7 @@ class WeatherPage extends ConsumerWidget {
           error: (err, _) {
             _log.severe('Fehler beim Laden des Wetters: $err');
             return ErrorMessage(
-              errorMessage: '❌ Fehler: $err',
+              errorMessage: AppStrings.error(err),
               onRetry: () => weatherNotifier.refreshWeather(),
             );
           },

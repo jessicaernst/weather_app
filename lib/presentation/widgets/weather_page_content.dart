@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/models/weather_state.dart';
 import 'package:weather_app/presentation/widgets/city_dropdown.dart';
 import 'package:weather_app/presentation/widgets/clear_history_btn.dart';
@@ -32,7 +33,7 @@ class WeatherPageContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'Wetter in ${state.selectedCity}',
+            AppStrings.actualWeatherIn(state.selectedCity),
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
@@ -56,9 +57,7 @@ class WeatherPageContent extends StatelessWidget {
           ],
           RefreshBtn(
             onPressed: () {
-              _logger.info(
-                'Aktualisiere Wetterdaten für ${state.selectedCity}...',
-              );
+              _logger.info(AppStrings.updateWeatherForCity(state.selectedCity));
               weatherNotifier.refreshWeather();
             },
           ),

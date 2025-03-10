@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/models/weather_data.dart';
 
 class CurrentWeatherInfo extends StatelessWidget {
@@ -10,25 +11,21 @@ class CurrentWeatherInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
-          '🌡 Aktuelle Temperatur: ',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
         Text(
-          '${weatherData.temperature.toStringAsFixed(1)}°C',
+          AppStrings.currentTemperature(weatherData.temperature),
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Text(
-          '🌤 Wetterlage: ${weatherData.weatherCondition}',
+          AppStrings.weatherCondition(weatherData.weatherCondition),
           style: const TextStyle(fontSize: 18),
         ),
         Text(
-          '💨 Windgeschwindigkeit: ${weatherData.windSpeed.toStringAsFixed(1)} km/h',
+          AppStrings.windSpeed(weatherData.windSpeed),
           style: const TextStyle(fontSize: 18),
         ),
         Text(
-          '💧 Luftfeuchtigkeit: ${weatherData.humidity.toStringAsFixed(1)}%',
+          AppStrings.humidity(weatherData.humidity),
           style: const TextStyle(fontSize: 18),
         ),
       ],

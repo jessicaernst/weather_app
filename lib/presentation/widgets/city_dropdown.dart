@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/providers/weather_provider.dart';
 
 class CityDropdown extends StatelessWidget {
@@ -16,14 +17,14 @@ class CityDropdown extends StatelessWidget {
     return DropdownButton<String>(
       value:
           WeatherNotifier.cities.containsKey(selectedCity) ||
-                  selectedCity == 'Aktueller Standort'
+                  selectedCity == AppStrings.currentLocation
               ? selectedCity
-              : 'Aktueller Standort',
+              : AppStrings.currentLocation,
       onChanged: onCityChanged,
       items: [
         const DropdownMenuItem(
-          value: 'Aktueller Standort',
-          child: Text('Aktueller Standort'),
+          value: AppStrings.currentLocation,
+          child: Text(AppStrings.currentLocation),
         ),
         ...WeatherNotifier.cities.keys.map(
           (city) => DropdownMenuItem(value: city, child: Text(city)),

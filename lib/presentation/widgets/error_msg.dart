@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/core/app_strings.dart';
 
 class ErrorMessage extends StatelessWidget {
   const ErrorMessage({
@@ -19,7 +20,7 @@ class ErrorMessage extends StatelessWidget {
         Text(errorMessage, style: const TextStyle(color: Colors.red)),
         ElevatedButton(
           onPressed: onRetry,
-          child: const Text('🔄 Wetter erneut abrufen'),
+          child: const Text(AppStrings.refreshWeatherBtnLbl),
         ),
       ],
     );
