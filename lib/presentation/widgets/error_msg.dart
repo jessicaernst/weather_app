@@ -13,16 +13,19 @@ class ErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 20,
-      children: [
-        Text(errorMessage, style: const TextStyle(color: Colors.red)),
-        ElevatedButton(
-          onPressed: onRetry,
-          child: const Text(AppStrings.refreshWeatherBtnLbl),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 20,
+        children: [
+          Text(errorMessage, style: const TextStyle(color: Colors.red)),
+          ElevatedButton(
+            onPressed: onRetry,
+            child: const Text(AppStrings.refreshWeatherBtnLbl),
+          ),
+        ],
+      ),
     );
   }
 }

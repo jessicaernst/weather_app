@@ -22,7 +22,7 @@ final httpClientProvider = AutoDisposeProvider<http.Client>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef HttpClientRef = AutoDisposeProviderRef<http.Client>;
-String _$weatherNotifierHash() => r'8a44bab8aea0c8b01ae77cc27256c008baf622c7';
+String _$weatherNotifierHash() => r'131c620f06de9ed5abc1519b1d2d7840b4c0a720';
 
 /// See also [WeatherNotifier].
 @ProviderFor(WeatherNotifier)

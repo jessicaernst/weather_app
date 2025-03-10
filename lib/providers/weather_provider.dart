@@ -2,6 +2,7 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http/http.dart' as http;
+import 'package:weather_app/core/app_strings.dart';
 import 'dart:convert';
 import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_app/models/weather_state.dart';
@@ -190,6 +191,17 @@ class WeatherNotifier extends _$WeatherNotifier {
       );
       _log.info('Wetterdaten für $city erfolgreich geladen.');
     }
+  }
+
+  /// ✅ Validiert den Stadtnamen und gibt eine gültige Stadt zurück
+  String validateCityName(String city) {
+    if (cities.containsKey(city) || city == AppStrings.currentLocation) {
+      return city;
+    }
+    _log.warning(
+      '⚠️ Ungültige Stadt "$city", zurücksetzen auf ${AppStrings.currentLocation}',
+    );
+    return AppStrings.currentLocation;
   }
 
   // Aktualisiert Wetterdaten für den aktuellen Standort

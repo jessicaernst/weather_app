@@ -9,9 +9,7 @@ import 'package:weather_app/providers/weather_provider.dart';
 final Logger _log = Logger('WeatherPage');
 
 class WeatherPage extends ConsumerWidget {
-  const WeatherPage({super.key, required this.title});
-
-  final String title;
+  const WeatherPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

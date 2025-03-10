@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:weather_app/core/app_strings.dart';
@@ -12,7 +13,7 @@ import 'package:weather_app/providers/weather_provider.dart';
 
 final Logger _logger = Logger('WeatherPage');
 
-class WeatherPageContent extends StatelessWidget {
+class WeatherPageContent extends ConsumerWidget {
   const WeatherPageContent({
     super.key,
     required this.state,
@@ -23,7 +24,7 @@ class WeatherPageContent extends StatelessWidget {
   final WeatherNotifier weatherNotifier;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     _logger.info('Baue Wetter-UI für ${state.selectedCity} auf...');
 
     return SingleChildScrollView(
@@ -32,19 +33,18 @@ class WeatherPageContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            AppStrings.actualWeatherIn(state.selectedCity),
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          SizedBox(
+            width: double.infinity,
+            child: Text(
+              AppStrings.actualWeatherIn(state.selectedCity),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
           ),
           const SizedBox(height: 10),
           CityDropdown(
             selectedCity: state.selectedCity,
-            onCityChanged: (newCity) {
-              if (newCity != null) {
-                _logger.info('Wechsle Stadt zu: $newCity');
-                weatherNotifier.updateCity(newCity);
-              }
-            },
+            weatherNotifier: weatherNotifier,
           ),
           const SizedBox(height: 20),
           if (state.weatherData != null) ...[
