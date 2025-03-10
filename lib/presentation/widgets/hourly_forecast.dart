@@ -6,25 +6,43 @@ import 'package:weather_app/models/weather_data.dart';
 final Logger _logger = Logger('HourlyForecast');
 
 class HourlyForecast extends StatelessWidget {
-  final WeatherData weatherData;
-
   const HourlyForecast({super.key, required this.weatherData});
+
+  final WeatherData weatherData;
 
   @override
   Widget build(BuildContext context) {
-    // 📌 Logging der Anzahl der Einträge, um sicherzustellen, dass Daten vorhanden sind
     _logger.info('Baue stündliche Vorhersage auf...');
     _logger.info('Anzahl der Stunden: ${weatherData.hourlyTemperature.length}');
 
-    // Falls keine Daten vorhanden sind, logge eine Warnung
     if (weatherData.hourlyTemperature.isEmpty ||
         weatherData.hourlyTimes.isEmpty ||
         weatherData.hourlyRainProbabilities.isEmpty) {
       _logger.warning(AppStrings.noWeatherData);
       return const Center(
-        child: Text('', style: TextStyle(color: Colors.grey)),
+        child: Text(
+          AppStrings.noWeatherData,
+          style: TextStyle(color: Colors.grey),
+        ),
       );
     }
+
+    // 🕒 Aktuelle Uhrzeit ermitteln und den Index der passenden Stunde in der Vorhersage finden
+    final DateTime now = DateTime.now();
+    int startIndex = weatherData.hourlyTimes.indexWhere((time) {
+      final DateTime forecastTime = DateTime.parse(time);
+      return forecastTime.isAfter(now);
+    });
+
+    if (startIndex == -1) {
+      _logger.warning(
+        'Keine zukünftigen Stunden verfügbar. Starte bei Stunde 0.',
+      );
+      startIndex =
+          0; // Falls keine passenden Werte gefunden wurden, mit dem ersten Eintrag starten
+    }
+
+    _logger.info('Vorhersage beginnt bei Index: $startIndex');
 
     return Column(
       children: [
@@ -37,21 +55,29 @@ class HourlyForecast extends StatelessWidget {
           height: 100,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: weatherData.hourlyTemperature.length,
+            itemCount: weatherData.hourlyTemperature.length - startIndex,
             itemBuilder: (context, index) {
-              // Sicherstellen, dass die Indexwerte nicht außerhalb der Listen liegen
-              if (index >= weatherData.hourlyTimes.length ||
-                  index >= weatherData.hourlyRainProbabilities.length) {
+              final int actualIndex = startIndex + index;
+              if (actualIndex >= weatherData.hourlyTimes.length ||
+                  actualIndex >= weatherData.hourlyRainProbabilities.length) {
                 _logger.warning(
-                  'Index $index ist außerhalb des gültigen Bereichs für Wetterdaten!',
+                  'Index $actualIndex ist außerhalb des gültigen Bereichs für Wetterdaten!',
                 );
                 return const SizedBox(); // Verhindert Abstürze bei inkonsistenten Daten
               }
 
+              final String timeLabel =
+                  (index == 0)
+                      ? 'Jetzt'
+                      : weatherData.hourlyTimes[actualIndex].substring(
+                        11,
+                        16,
+                      ); // Sonst HH:mm
+
               _logger.fine(
-                'Erstelle Vorhersage-Widget für ${weatherData.hourlyTimes[index]}: '
-                '${weatherData.hourlyTemperature[index]}°C, '
-                '${weatherData.hourlyRainProbabilities[index]}% Regen',
+                'Erstelle Vorhersage-Widget für $timeLabel: '
+                '${weatherData.hourlyTemperature[actualIndex]}°C, '
+                '${weatherData.hourlyRainProbabilities[actualIndex]}% Regen',
               );
 
               return Container(
@@ -66,17 +92,17 @@ class HourlyForecast extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '⏰ ${weatherData.hourlyTimes[index].substring(11, 16)}',
+                      '⏰ $timeLabel',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '🌡 ${weatherData.hourlyTemperature[index].toStringAsFixed(1)}°C',
+                      '🌡 ${weatherData.hourlyTemperature[actualIndex].toStringAsFixed(1)}°C',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '🌧 ${weatherData.hourlyRainProbabilities[index]}%',
+                      '🌧 ${weatherData.hourlyRainProbabilities[actualIndex]}%',
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ],

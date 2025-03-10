@@ -11,8 +11,12 @@ class CurrentWeatherInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const Text(
+          AppStrings.currentTemperature,
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
         Text(
-          AppStrings.currentTemperature(weatherData.temperature),
+          '${weatherData.temperature % 1 == 0 ? weatherData.temperature.toInt() : weatherData.temperature.toStringAsFixed(1)} °C',
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),

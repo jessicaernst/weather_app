@@ -2,9 +2,7 @@ abstract class AppStrings {
   static const String appTitle = 'Wetter App';
 
   // 🌡 Aktuelle Wetterdaten
-  static String currentTemperature(double temp) {
-    return '🌡 Aktuelle Temperatur: ${temp % 1 == 0 ? temp.toInt() : temp.toStringAsFixed(1)}°C';
-  }
+  static const String currentTemperature = '🌡 Aktuelle Temperatur:';
 
   static String weatherCondition(String condition) {
     return '🌤 Wetterlage: $condition';
