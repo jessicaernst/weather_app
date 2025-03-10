@@ -159,8 +159,8 @@ Für die Möglichkeit auch kleinere Orte und Stadtteile mit ausgeben zu können 
 ---
 
 ## Screenshots:
-![Simulator Screenshot - iPhone 16 Pro - 2025-03-10 at 19 03 10](https://github.com/user-attachments/assets/39a67cbc-3255-4919-a198-485310f3c6d4)
-![Simulator Screenshot - iPhone 16 Pro - 2025-03-10 at 19 03 15](https://github.com/user-attachments/assets/874e9f5a-434f-4596-aede-d1867fdfc871)
+
+![Screenshot 2025-03-10 at 19 05 53](https://github.com/user-attachments/assets/27dd109d-22e6-46c1-8462-5d928551698b)
 
 
 
