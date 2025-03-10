@@ -38,6 +38,7 @@ abstract class AppStrings {
       '⚠️ Keine stündlichen Wetterdaten verfügbar.';
 
   static const String clearHistoryBtnLbl = '🗑️ Historie löschen';
-  static const String refreshBtnLbl = '🔄 Wetter aktualisieren';
+  static const String refreshBtnLbl =
+      '🔄 Wetter aktualisieren für aktuellen Standort';
   static const String refreshWeatherBtnLbl = '🔄 Wetter erneut abrufen';
 }

@@ -17,7 +17,10 @@ class WeatherPage extends ConsumerWidget {
     final weatherNotifier = ref.read(weatherNotifierProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.appTitle)),
+      appBar: AppBar(
+        title: const Text(AppStrings.appTitle),
+        backgroundColor: Colors.blueGrey.withAlpha((0.2 * 255).toInt()),
+      ),
       body: Center(
         child: weatherState.when(
           data:
