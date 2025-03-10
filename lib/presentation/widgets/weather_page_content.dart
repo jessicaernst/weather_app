@@ -33,25 +33,25 @@ class WeatherPageContent extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          CityDropdown(
+            selectedCity: state.selectedCity,
+            weatherNotifier: weatherNotifier,
+          ),
+          const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
             child: Text(
               AppStrings.actualWeatherIn(state.selectedCity),
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
           ),
-          const SizedBox(height: 10),
-          CityDropdown(
-            selectedCity: state.selectedCity,
-            weatherNotifier: weatherNotifier,
-          ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 32),
           if (state.weatherData != null) ...[
             CurrentWeatherInfo(weatherData: state.weatherData!),
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
             HourlyForecast(weatherData: state.weatherData!),
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
             const SevenDayForecast(),
             const SizedBox(height: 20),
           ],

@@ -27,20 +27,8 @@ class HourlyForecast extends StatelessWidget {
       );
     }
 
-    // 🕒 Aktuelle Uhrzeit ermitteln und den Index der passenden Stunde in der Vorhersage finden
-    final DateTime now = DateTime.now();
-    int startIndex = weatherData.hourlyTimes.indexWhere((time) {
-      final DateTime forecastTime = DateTime.parse(time);
-      return forecastTime.isAfter(now);
-    });
-
-    if (startIndex == -1) {
-      _logger.warning(
-        'Keine zukünftigen Stunden verfügbar. Starte bei Stunde 0.',
-      );
-      startIndex =
-          0; // Falls keine passenden Werte gefunden wurden, mit dem ersten Eintrag starten
-    }
+    // 📌 **Startindex kommt direkt aus den bereits umgerechneten Daten**
+    final int startIndex = 0;
 
     _logger.info('Vorhersage beginnt bei Index: $startIndex');
 
@@ -72,7 +60,7 @@ class HourlyForecast extends StatelessWidget {
                       : weatherData.hourlyTimes[actualIndex].substring(
                         11,
                         16,
-                      ); // Sonst HH:mm
+                      ); // HH:mm
 
               _logger.fine(
                 'Erstelle Vorhersage-Widget für $timeLabel: '

@@ -11,7 +11,6 @@ import 'package:weather_app/services/storage_service.dart';
 
 part 'weather_provider.g.dart';
 
-// Logger zur Fehleranalyse & Debugging
 final Logger _log = Logger('WeatherNotifier');
 
 @riverpod
@@ -30,7 +29,6 @@ class WeatherNotifier extends _$WeatherNotifier {
     'Köln': (50.9375, 6.9603),
   };
 
-  // Initialisiert das Wetter basierend auf gespeicherten oder aktuellen Standortdaten
   @override
   Future<WeatherState> build() async {
     _log.info('Lade gespeicherte Standortinformationen...');
@@ -61,17 +59,25 @@ class WeatherNotifier extends _$WeatherNotifier {
     return fetchWeatherForCurrentLocation();
   }
 
-  // Holt das Wetter für den aktuellen Standort
   Future<WeatherState> fetchWeatherForCurrentLocation() async {
     try {
       _log.info('Ermittle aktuellen Standort...');
       state = const AsyncValue.loading();
 
       final position = await LocationService.determinePosition();
-      final locationName = await LocationService.getLocationName(
+      String locationName = await LocationService.getLocationName(
         position.latitude,
         position.longitude,
       );
+
+      // Falls kein Name gefunden wurde, ersetze mit "Aktueller Standort"
+      if (locationName.isEmpty) {
+        locationName = 'Aktueller Standort';
+        _log.warning(
+          'Standortname nicht gefunden, nutze Fallback: $locationName',
+        );
+      }
+
       final weatherData = await fetchWeather(
         position.latitude,
         position.longitude,
@@ -84,10 +90,10 @@ class WeatherNotifier extends _$WeatherNotifier {
         true,
         locationName,
       );
+
       _log.info(
         'Wetter für aktuellen Standort ($locationName) erfolgreich geladen.',
       );
-
       return WeatherState(
         selectedCity: locationName,
         useGeolocation: true,
@@ -105,7 +111,7 @@ class WeatherNotifier extends _$WeatherNotifier {
     }
   }
 
-  // Open-Meteo API: Holt aktuelle Wetterdaten, Vorhersagen & mehr
+  // Holt Wetterdaten von der Open-Meteo API
   Future<WeatherData> fetchWeather(
     double latitude,
     double longitude,
@@ -119,7 +125,8 @@ class WeatherNotifier extends _$WeatherNotifier {
             Uri.parse(
               'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude'
               '&current_weather=true'
-              '&hourly=temperature_2m,precipitation_probability', // 🔥 Holt stündliche Werte
+              '&hourly=temperature_2m,precipitation_probability'
+              '&timezone=auto',
             ),
           );
 
@@ -128,19 +135,68 @@ class WeatherNotifier extends _$WeatherNotifier {
         final weatherData = jsonData['current_weather'];
         final hourlyData = jsonData['hourly'];
 
-        // 🔥 Extrahiere stündliche Temperaturen & Regenwahrscheinlichkeiten
+        final String timezone = jsonData['timezone'];
+
+        // 📌 Zeiten direkt als lokale Zeit verwenden
+        final List<DateTime> hourlyTimes =
+            List<String>.from(
+              hourlyData['time'],
+            ).map((time) => DateTime.parse(time)).toList();
         final List<double> hourlyTemps = List<double>.from(
-          hourlyData['temperature_2m']
-              .map((temp) => (temp as num).toDouble())
-              .toList(),
+          hourlyData['temperature_2m'].map((temp) => (temp as num).toDouble()),
         );
         final List<double> hourlyRain = List<double>.from(
-          hourlyData['precipitation_probability']
-              .map((prob) => (prob as num).toDouble())
-              .toList(),
+          hourlyData['precipitation_probability'].map(
+            (prob) => (prob as num).toDouble(),
+          ),
         );
 
-        final List<String> hourlyTimes = List<String>.from(hourlyData['time']);
+        // 📌 `current_weather.time` gibt die aktuelle lokale Zeit zurück
+        final DateTime nowLocal = DateTime.parse(weatherData['time']);
+
+        // 📌 Den **exakten** Index für die aktuelle Stunde finden
+        int startIndex = hourlyTimes.indexWhere(
+          (time) => time.hour == nowLocal.hour,
+        );
+
+        // ❗ Falls keine exakte Übereinstimmung, nehme die nächste Stunde
+        if (startIndex == -1) {
+          _log.warning(
+            '⚠️ Keine exakte Stunde gefunden, nehme nächste Stunde.',
+          );
+          startIndex = hourlyTimes.indexWhere((time) => time.isAfter(nowLocal));
+        }
+
+        // ❗ Falls der Index außerhalb des Bereichs liegt, setze ihn auf 0
+        if (startIndex == -1 || startIndex >= hourlyTemps.length) {
+          startIndex = 0;
+        }
+
+        // 📌 Falls `current_weather.temperature` stark von `hourlyTemps[startIndex]` abweicht, setze sie explizit
+        if ((hourlyTemps[startIndex] - weatherData['temperature']).abs() >
+            1.0) {
+          _log.warning(
+            '⚠️ Temperaturabweichung! Nutze `current_weather.temperature` für "Jetzt".',
+          );
+          hourlyTemps[startIndex] =
+              (weatherData['temperature'] ?? 0.0).toDouble();
+        }
+
+        _log.info('📌 Startindex für Vorhersage: $startIndex');
+
+        final List<String> filteredHourlyTimes =
+            hourlyTimes
+                .sublist(startIndex)
+                .map((dt) => dt.toIso8601String())
+                .toList();
+        final List<double> filteredHourlyTemps = hourlyTemps.sublist(
+          startIndex,
+        );
+        final List<double> filteredHourlyRain = hourlyRain.sublist(startIndex);
+
+        _log.info('⏰ Zeiten nach Fix: $filteredHourlyTimes');
+        _log.info('🌡 Temperaturen nach Fix: $filteredHourlyTemps');
+        _log.info('🌧 Regenwahrscheinlichkeit nach Fix: $filteredHourlyRain');
 
         final weather = WeatherData(
           location: locationName,
@@ -149,9 +205,10 @@ class WeatherNotifier extends _$WeatherNotifier {
               (weatherData['weathercode'] ?? 'Unbekannt').toString(),
           windSpeed: (weatherData['windspeed'] ?? 0.0).toDouble(),
           humidity: (weatherData['relativehumidity_2m'] ?? 0.0).toDouble(),
-          hourlyTemperature: hourlyTemps,
-          hourlyRainProbabilities: hourlyRain,
-          hourlyTimes: hourlyTimes,
+          hourlyTemperature: filteredHourlyTemps,
+          hourlyRainProbabilities: filteredHourlyRain,
+          hourlyTimes: filteredHourlyTimes,
+          timezone: timezone,
         );
 
         _log.info('✅ Wetterdaten für $locationName erfolgreich geladen.');

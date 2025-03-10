@@ -14,6 +14,7 @@ abstract class WeatherData with _$WeatherData {
     required List<double> hourlyTemperature,
     required List<double> hourlyRainProbabilities,
     required List<String> hourlyTimes,
+    required String timezone,
   }) = _WeatherData;
 
   factory WeatherData.fromJson(Map<String, dynamic> json) =>
