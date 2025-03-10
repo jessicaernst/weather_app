@@ -151,10 +151,19 @@ void fetchWeather() {
 
 ---
 
-**Hinweis:**
+## Hinweis:
 Da es sich nur um ein Übungsprojekt handelt und es mir eher um API's und die Logik ging habe ich darauf Verzichtet TextStyles und ColorStyles auszulagern.
 
 Für die Möglichkeit auch kleinere Orte und Stadtteile mit ausgeben zu können habe ich mich für open street map entschieden beim Reverse Geocoding, ist aber aktuell nicht so weit implementiert.
+
+---
+
+## Screenshots:
+![Simulator Screenshot - iPhone 16 Pro - 2025-03-10 at 19 03 10](https://github.com/user-attachments/assets/39a67cbc-3255-4919-a198-485310f3c6d4)
+![Simulator Screenshot - iPhone 16 Pro - 2025-03-10 at 19 03 15](https://github.com/user-attachments/assets/874e9f5a-434f-4596-aede-d1867fdfc871)
+
+
+
 
 
 
