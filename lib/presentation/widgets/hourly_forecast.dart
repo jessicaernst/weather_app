@@ -43,7 +43,7 @@ class HourlyForecast extends StatelessWidget {
           height: 100,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: weatherData.hourlyTemperature.length - startIndex,
+            itemCount: 24,
             itemBuilder: (context, index) {
               final int actualIndex = startIndex + index;
               if (actualIndex >= weatherData.hourlyTimes.length ||
@@ -56,7 +56,7 @@ class HourlyForecast extends StatelessWidget {
 
               final String timeLabel =
                   (index == 0)
-                      ? 'Jetzt'
+                      ? AppStrings.now
                       : weatherData.hourlyTimes[actualIndex].substring(
                         11,
                         16,

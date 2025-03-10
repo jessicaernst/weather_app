@@ -28,6 +28,7 @@ abstract class AppStrings {
   static const String updateWeather = '🔄 Wetter aktualisieren';
   static const String currentLocation = '📍 Aktueller Standort';
   static const String hourlyForecast = '⏳ Stündliche Vorhersage';
+  static const String now = 'Jetzt';
 
   // 🛠 Fehler & Aktionen
   static String error(Object message) {

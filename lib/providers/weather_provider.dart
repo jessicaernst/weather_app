@@ -72,7 +72,7 @@ class WeatherNotifier extends _$WeatherNotifier {
 
       // Falls kein Name gefunden wurde, ersetze mit "Aktueller Standort"
       if (locationName.isEmpty) {
-        locationName = 'Aktueller Standort';
+        locationName = AppStrings.currentLocation;
         _log.warning(
           'Standortname nicht gefunden, nutze Fallback: $locationName',
         );
