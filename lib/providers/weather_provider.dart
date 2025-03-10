@@ -14,6 +14,7 @@ part 'weather_provider.g.dart';
 
 final Logger _log = Logger('WeatherNotifier');
 
+// 🚀 Initialisiert den HTTP-Client für die Wetter-API
 @riverpod
 http.Client httpClient(Ref ref) {
   return http.Client();
@@ -30,7 +31,10 @@ class WeatherNotifier extends _$WeatherNotifier {
     'Köln': (50.9375, 6.9603),
   };
 
-  // 🚀 Initialisiert den Wetter-Provider und lädt gespeicherte Standortdaten oder den aktuellen Standort
+  /// 🚀 Beim Starten der App wird diese Methode automatisch aufgerufen.
+  /// Sie prüft, ob bereits ein Standort gespeichert ist.
+  /// - Falls ja, lädt sie die gespeicherten Daten.
+  /// - Falls nein, wird der aktuelle Standort ermittelt.
   @override
   Future<WeatherState> build() async {
     _log.info('Lade gespeicherte Standortinformationen...');
@@ -61,7 +65,12 @@ class WeatherNotifier extends _$WeatherNotifier {
     return fetchWeatherForCurrentLocation();
   }
 
-  // 📍 Holt das Wetter für den aktuellen Standort
+  /// 📍 Holt das Wetter für den **aktuellen Standort** des Geräts.
+  /// - **Schritte:**
+  ///   1. Holt die GPS-Koordinaten.
+  ///   2. Wandelt die Koordinaten in einen Ortsnamen um.
+  ///   3. Fragt die Wetter-API mit diesen Daten ab.
+  ///   4. Speichert den Standort für die Zukunft.
   Future<WeatherState> fetchWeatherForCurrentLocation() async {
     try {
       _log.info('Ermittle aktuellen Standort...');
