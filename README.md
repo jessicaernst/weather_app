@@ -151,14 +151,14 @@ void fetchWeather() {
 
 ---
 
-## Hinweis:
+## ⚠️ Hinweis:
 Da es sich nur um ein Übungsprojekt handelt und es mir eher um API's und die Logik ging habe ich darauf Verzichtet TextStyles und ColorStyles auszulagern.
 
 Für die Möglichkeit auch kleinere Orte und Stadtteile mit ausgeben zu können habe ich mich für open street map entschieden beim Reverse Geocoding, ist aber aktuell nicht so weit implementiert.
 
 ---
 
-## Screenshots:
+## 🖼️ Screenshots:
 
 ![Screenshot 2025-03-10 at 19 07 16](https://github.com/user-attachments/assets/7d26706d-03cc-4b26-8820-0c177d50bf9f)
 
