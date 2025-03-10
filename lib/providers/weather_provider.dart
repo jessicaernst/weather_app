@@ -30,6 +30,7 @@ class WeatherNotifier extends _$WeatherNotifier {
     'Köln': (50.9375, 6.9603),
   };
 
+  // 🚀 Initialisiert den Wetter-Provider und lädt gespeicherte Standortdaten oder den aktuellen Standort
   @override
   Future<WeatherState> build() async {
     _log.info('Lade gespeicherte Standortinformationen...');
@@ -60,6 +61,7 @@ class WeatherNotifier extends _$WeatherNotifier {
     return fetchWeatherForCurrentLocation();
   }
 
+  // 📍 Holt das Wetter für den aktuellen Standort
   Future<WeatherState> fetchWeatherForCurrentLocation() async {
     try {
       _log.info('Ermittle aktuellen Standort...');
@@ -85,6 +87,7 @@ class WeatherNotifier extends _$WeatherNotifier {
         locationName,
       );
 
+      // 💾 Speichere den Standort für zukünftige Abrufe
       await LocationService.saveLastLocation(
         position.latitude,
         position.longitude,

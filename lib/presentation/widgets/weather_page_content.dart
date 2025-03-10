@@ -16,45 +16,60 @@ final Logger _logger = Logger('WeatherPage');
 class WeatherPageContent extends ConsumerWidget {
   const WeatherPageContent({
     super.key,
-    required this.state,
-    required this.weatherNotifier,
+    required this.state, // 🌍 Enthält den aktuellen Zustand (Wetterdaten, Stadt etc.)
+    required this.weatherNotifier, // 🔄 Steuert das Laden und Aktualisieren der Wetterdaten
   });
 
-  final WeatherState state;
-  final WeatherNotifier weatherNotifier;
+  final WeatherState state; // 🌤 Der aktuelle Zustand der Wetterseite
+  final WeatherNotifier weatherNotifier; // 📡 Steuert das Wetter-Update
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.info('Baue Wetter-UI für ${state.selectedCity} auf...');
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16), // 📏 Abstand für eine bessere Optik
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center, // 🔄 Zentriert den Inhalt
         crossAxisAlignment: CrossAxisAlignment.center,
+
         children: [
+          // 📌 Dropdown für die Stadtauswahl
           CityDropdown(
             selectedCity: state.selectedCity,
             weatherNotifier: weatherNotifier,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(
+            height: 10,
+          ), // 📏 Kleiner Abstand für bessere Lesbarkeit
+          // 📌 Überschrift mit dem aktuellen Ort
           SizedBox(
-            width: double.infinity,
+            width: double.infinity, // 📏 Volle Breite für bessere Darstellung
             child: Text(
               AppStrings.actualWeatherIn(state.selectedCity),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.center, // 📌 Mittige Ausrichtung
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(
+            height: 32,
+          ), // 📏 Mehr Abstand, um Sektionen zu trennen
+          // 📌 Wetterdaten werden angezeigt, wenn sie verfügbar sind
           if (state.weatherData != null) ...[
+            // 🌡 Zeigt die aktuellen Wetterinfos an (Temperatur, Wind, Luftfeuchtigkeit)
             CurrentWeatherInfo(weatherData: state.weatherData!),
             const SizedBox(height: 32),
+
+            // ⏰ Zeigt die stündliche Vorhersage an
             HourlyForecast(weatherData: state.weatherData!),
             const SizedBox(height: 32),
+
+            // 📅 Zeigt die 7-Tage-Wettervorhersage
             SevenDayForecast(weatherData: state.weatherData!),
             const SizedBox(height: 20),
           ],
+
+          // 🔄 Aktualisieren-Button (Lädt aktuelle Wetterdaten neu)
           RefreshBtn(
             onPressed: () {
               _logger.info(AppStrings.updateWeatherForCity(state.selectedCity));
@@ -62,6 +77,8 @@ class WeatherPageContent extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 10),
+
+          // 🗑 Löscht die gespeicherte Wetterhistorie
           ClearHistoryBtn(
             onPressed: () {
               _logger.warning('Lösche gespeicherte Wetterhistorie...');
