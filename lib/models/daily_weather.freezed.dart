@@ -16,7 +16,11 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DailyWeather {
 
- DateTime get date; double get minTemp; double get maxTemp; double get precipitationProbability; int get weatherCode;
+ DateTime get date;// 📅 Das Datum des jeweiligen Tages (z.B. 2025-03-12)
+ double get minTemp;// 🌡 Die **Minimaltemperatur** des Tages (°C)
+ double get maxTemp;// 🔥 Die **Maximaltemperatur** des Tages (°C)
+ double get precipitationProbability;// 🌧 Die Regenwahrscheinlichkeit (%)
+ int get weatherCode;
 /// Create a copy of DailyWeather
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -88,9 +92,13 @@ class _DailyWeather implements DailyWeather {
   factory _DailyWeather.fromJson(Map<String, dynamic> json) => _$DailyWeatherFromJson(json);
 
 @override final  DateTime date;
+// 📅 Das Datum des jeweiligen Tages (z.B. 2025-03-12)
 @override final  double minTemp;
+// 🌡 Die **Minimaltemperatur** des Tages (°C)
 @override final  double maxTemp;
+// 🔥 Die **Maximaltemperatur** des Tages (°C)
 @override final  double precipitationProbability;
+// 🌧 Die Regenwahrscheinlichkeit (%)
 @override final  int weatherCode;
 
 /// Create a copy of DailyWeather

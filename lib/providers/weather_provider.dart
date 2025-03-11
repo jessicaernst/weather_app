@@ -185,19 +185,32 @@ class WeatherNotifier extends _$WeatherNotifier {
             ),
           );
 
+      _log.info('🔍 API-Response: ${response.body}');
+
       // ✅ Überprüft, ob die API erfolgreich geantwortet hat (Statuscode 200 = OK).
       if (response.statusCode == 200) {
         // 📌 Konvertiert die API-Antwort von JSON in eine Dart-Map.
-        final jsonData = json.decode(response.body);
+        final jsonData =
+            json.decode(response.body) as Map<String, dynamic>? ?? {};
 
         // 📌 Extrahiert verschiedene Wetterdaten aus der API-Antwort:
         final weatherData =
-            jsonData['current_weather']; // 🌡 Aktuelle Wetterbedingungen (z. B. Temperatur)
-        final hourlyData = jsonData['hourly']; // ⏳ Stündliche Wettervorhersage
-        final dailyData = jsonData['daily']; // 📆 7-Tage-Vorhersage
+            jsonData['current_weather'] as Map<String, dynamic>? ??
+            {}; // 🌡 Aktuelle Wetterbedingungen (z. B. Temperatur)
+        final hourlyData =
+            jsonData['hourly'] as Map<String, dynamic>? ??
+            {}; // ⏳ Stündliche Wettervorhersage
+        final dailyData =
+            jsonData['daily'] as Map<String, dynamic>? ??
+            {}; // 📆 7-Tage-Vorhersage
 
-        // 🕒 Holt die Zeitzone des Standorts (z. B. "Europe/Berlin" oder "America/Los_Angeles").
-        final String timezone = jsonData['timezone'];
+        _log.info('🔍 API-Response Raw Data: ${json.encode(jsonData)}');
+        _log.info('🔍 Parsed Weather Data: ${json.encode(weatherData)}');
+        _log.info('🔍 Parsed Hourly Data: ${json.encode(hourlyData)}');
+        _log.info('🔍 Parsed Daily Data: ${json.encode(dailyData)}');
+
+        // 🕒 Holt die Zeitzone des Standorts (z. B. "Europe/Berlin" oder "UTC" als Fallback).
+        final String timezone = (jsonData['timezone'] ?? 'UTC').toString();
 
         // 🕒 Liste mit den Zeitstempeln (als Strings) aus der API holen und in `DateTime` umwandeln
         final List<DateTime> hourlyTimes =
@@ -210,21 +223,19 @@ class WeatherNotifier extends _$WeatherNotifier {
                 ) // 🛠 Jeden Zeit-String in ein `DateTime`-Objekt konvertieren
                 .toList(); // ✅ Ergebnis ist eine Liste von `DateTime`-Objekten
 
-        // 🌡 Temperaturen für jede Stunde aus der API holen und in eine `double`-Liste umwandeln
+        // 🌡 Temperaturen für jede Stunde aus der API holen, falls vorhanden, sonst eine leere Liste verwenden
         final List<double> hourlyTemps = List<double>.from(
-          hourlyData['temperature_2m'] // 🌡 Holt eine Liste mit Temperaturen, z. B. [5.2, 4.8, 4.3]
-              .map(
-                (temp) => (temp as num).toDouble(),
-              ), // 🔄 Jede Temperatur in `double` umwandeln, falls nötig
-        ); // ✅ Ergebnis ist eine `List<double>` mit den Temperaturen für jede Stunde
+          (hourlyData['temperature_2m'] ?? []).map(
+            (temp) => (temp as num).toDouble(),
+          ),
+        );
 
-        // 🌧 Regenwahrscheinlichkeit für jede Stunde aus der API holen und umwandeln
+        // 🌧 Regenwahrscheinlichkeit für jede Stunde aus der API holen, falls vorhanden, sonst eine leere Liste verwenden
         final List<double> hourlyRain = List<double>.from(
-          hourlyData['precipitation_probability'] // 🌧 Liste mit Regenwahrscheinlichkeiten, z. B. [10, 20, 30]
-              .map(
-                (prob) => (prob as num).toDouble(),
-              ), // 🔄 Jede Wahrscheinlichkeit in `double` umwandeln
-        ); // ✅ Ergebnis ist eine `List<double>` mit den Regenwahrscheinlichkeiten für jede Stunde
+          (hourlyData['precipitation_probability'] ?? []).map(
+            (prob) => (prob as num).toDouble(),
+          ),
+        );
 
         // ⏰ Holt die aktuelle Zeit aus den Wetterdaten und wandelt sie in ein `DateTime`-Objekt um
         final DateTime nowLocal = DateTime.parse(
@@ -245,59 +256,83 @@ class WeatherNotifier extends _$WeatherNotifier {
         // **📌 Tägliche Werte**
         // 🔥 Erstellt eine Liste von DailyWeather-Objekten für die 7-Tage-Vorhersage.
         final List<DailyWeather> dailyForecast = List.generate(
-          // 🕒 Die Länge der Liste entspricht der Anzahl der Tage in den API-Daten.
-          dailyData['time'].length,
+          // 🕒 Die Länge der Liste entspricht der Anzahl der Tage in den API-Daten, falls vorhanden, sonst 0.
+          (dailyData['time'] as List<dynamic>?)?.length ?? 0,
 
           // 🔄 Für jeden Tag in der API-Antwort wird ein DailyWeather-Objekt erstellt.
           (index) => DailyWeather(
             // 📅 Das Datum des jeweiligen Tages wird aus der API geholt und in ein DateTime-Objekt umgewandelt.
-            date: DateTime.parse(dailyData['time'][index]),
-
+            // Falls `time` nicht existiert, wird ein Standard-Datum genutzt.
+            date:
+                (dailyData['time'] as List<dynamic>?) != null
+                    ? DateTime.parse(dailyData['time'][index] as String)
+                    : DateTime.now(), // Fallback auf das aktuelle Datum
             // 🌡 Die Mindesttemperatur für diesen Tag wird geholt und in ein Double umgewandelt.
-            minTemp: (dailyData['temperature_2m_min'][index] as num).toDouble(),
+            // Falls sie nicht existiert, wird `0.0` als Fallback gesetzt.
+            minTemp:
+                (dailyData['temperature_2m_min']?[index] as num?)?.toDouble() ??
+                0.0,
 
             // 🔥 Die Maximaltemperatur für diesen Tag wird ebenfalls geholt und in ein Double umgewandelt.
-            maxTemp: (dailyData['temperature_2m_max'][index] as num).toDouble(),
+            // Falls sie nicht existiert, wird `0.0` als Fallback gesetzt.
+            maxTemp:
+                (dailyData['temperature_2m_max']?[index] as num?)?.toDouble() ??
+                0.0,
 
             // 🌧 Die Regenwahrscheinlichkeit für diesen Tag wird ausgelesen und zu einem Double konvertiert.
+            // Falls sie nicht existiert, wird `0.0` als Fallback gesetzt.
             precipitationProbability:
-                (dailyData['precipitation_probability_mean'][index] as num)
-                    .toDouble(),
+                (dailyData['precipitation_probability_mean']?[index] as num?)
+                    ?.toDouble() ??
+                0.0,
 
             // ☁️ Der Wettercode für diesen Tag wird ausgelesen und als Integer gespeichert.
+            // Falls er nicht existiert, wird `0` als Fallback gesetzt.
             //    Dieser Code bestimmt später, welches Icon für das Wetter angezeigt wird.
-            weatherCode: dailyData['weathercode'][index] as int,
+            weatherCode: dailyData['weathercode']?[index] as int? ?? 0,
           ),
         );
 
-        // 🌍 Ein `WeatherData`-Objekt wird ertsellt, das alle wichtigen Wetterinformationen speichert.
+        // 🌍 Erstellt das `WeatherData`-Objekt mit allen relevanten Wetterinformationen.
         final weather = WeatherData(
-          // 🏙 Name des Ortes (z. B. "Berlin" oder "Aktueller Standort")
           location: locationName,
-          // 🌡 Temperatur in Celsius. Falls kein Wert vorhanden ist, wird 0.0 gesetzt, um Abstürze zu vermeiden.
-          temperature: (weatherData['temperature'] ?? 0.0).toDouble(),
-          // ⛅ Der Wettercode wird als String gespeichert.
-          // Falls kein Code vorhanden ist, wird "Unbekannt" als Standardwert gesetzt.
+
+          // 🌡 Falls `temperature` fehlt, setze 0.0 als Fallback
+          temperature: (weatherData['temperature'] as num?)?.toDouble() ?? 0.0,
+
+          // ⛅ Falls `weathercode` fehlt, setze "Unbekannt"
           weatherCondition:
-              (weatherData['weathercode'] ?? 'Unbekannt').toString(),
-          // 🌬 Windgeschwindigkeit in km/h. Falls kein Wert vorhanden ist, wird 0.0 als Standard gesetzt.
-          windSpeed: (weatherData['windspeed'] ?? 0.0).toDouble(),
-          // 💧 Luftfeuchtigkeit in %. Falls kein Wert vorhanden ist, wird 0.0 als Standardwert gesetzt.
-          humidity: (weatherData['relativehumidity_2m'] ?? 0.0).toDouble(),
-          // 📊 Holt die Temperaturen für die nächsten Stunden, beginnend mit der aktuellen Stunde (`startIndex`).
-          hourlyTemperature: hourlyTemps.sublist(startIndex),
-          // 📊 Holt die Regenwahrscheinlichkeiten für die nächsten Stunden, beginnend mit der aktuellen Stunde (`startIndex`).
-          hourlyRainProbabilities: hourlyRain.sublist(startIndex),
-          // ⏰ Konvertiert die Liste der Zeitstempel in Strings für eine einfachere Darstellung.
+              (weatherData['weathercode']?.toString() ?? 'Unbekannt'),
+
+          // 🌬 Falls `windspeed` fehlt, setze 0.0 als Fallback
+          windSpeed: (weatherData['windspeed'] as num?)?.toDouble() ?? 0.0,
+
+          // 💧 Falls `relativehumidity_2m` fehlt, setze 0.0 als Fallback
+          humidity:
+              (weatherData['relativehumidity_2m'] as num?)?.toDouble() ?? 0.0,
+
+          // 📊 Falls `hourlyTemperature` fehlt, setze eine leere Liste als Fallback
+          hourlyTemperature:
+              hourlyTemps.isNotEmpty ? hourlyTemps.sublist(startIndex) : [],
+
+          // 🌧 Falls `hourlyRainProbabilities` fehlt, setze eine leere Liste als Fallback
+          hourlyRainProbabilities:
+              hourlyRain.isNotEmpty ? hourlyRain.sublist(startIndex) : [],
+
+          // ⏰ Falls `hourlyTimes` fehlt, setze eine leere Liste als Fallback
           hourlyTimes:
-              hourlyTimes
-                  .sublist(startIndex)
-                  .map((dt) => dt.toIso8601String())
-                  .toList(),
-          // 🌍 Speichert die Zeitzone des Ortes (z. B. "Europe/Berlin").
+              hourlyTimes.isNotEmpty
+                  ? hourlyTimes
+                      .sublist(startIndex)
+                      .map((dt) => dt.toIso8601String())
+                      .toList()
+                  : [],
+
+          // 🌍 Setzt die Zeitzone aus den API-Daten (oder `UTC`, falls nicht vorhanden)
           timezone: timezone,
-          // 📅 Speichert die tägliche Wettervorhersage (z. B. Min-/Max-Temperatur, Regenwahrscheinlichkeit)
-          dailyWeather: dailyForecast,
+
+          // 📅 Falls `dailyWeather` fehlt, setze eine leere Liste als Fallback
+          dailyWeather: dailyForecast.isNotEmpty ? dailyForecast : [],
         );
 
         _log.info('✅ Wetterdaten für $locationName erfolgreich geladen.');

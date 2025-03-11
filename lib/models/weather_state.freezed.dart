@@ -15,7 +15,18 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WeatherState {
 
- String get selectedCity; bool get useGeolocation; WeatherData? get weatherData; bool get isLoading; String? get errorMessage;
+/// 📍 Der aktuell ausgewählte Standort.
+/// - Standardwert ist **"Aktueller Standort"**, falls kein anderer Standort gewählt wurde.
+ String get selectedCity;/// 🌍 Gibt an, ob die Geolocation (GPS) verwendet wird oder ein manueller Standort gewählt wurde.
+/// - Standardwert ist `true`, d.h., die App verwendet **automatisch den aktuellen Standort**.
+ bool get useGeolocation;/// 🌦 Die aktuellen Wetterdaten, falls vorhanden.
+/// - `WeatherData?` bedeutet: **Kann `null` sein**, wenn noch keine Daten geladen wurden oder ein Fehler aufgetreten ist.
+ WeatherData? get weatherData;/// ⏳ Zeigt an, ob gerade **Wetterdaten geladen** werden.
+/// - Standardwert ist `false`, d.h., anfangs wird **kein Ladevorgang** ausgeführt.
+/// - Falls die App gerade neue Wetterdaten lädt, wird dieser Wert `true` gesetzt.
+ bool get isLoading;/// ⚠️ Falls ein Fehler auftritt (z. B. API nicht erreichbar), wird die **Fehlermeldung hier gespeichert**.
+/// - `String?` bedeutet: **Kann `null` sein**, wenn kein Fehler vorliegt.
+ String? get errorMessage;
 /// Create a copy of WeatherState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -96,10 +107,21 @@ class _WeatherState implements WeatherState {
   const _WeatherState({this.selectedCity = 'Aktueller Standort', this.useGeolocation = true, this.weatherData, this.isLoading = false, this.errorMessage});
   
 
+/// 📍 Der aktuell ausgewählte Standort.
+/// - Standardwert ist **"Aktueller Standort"**, falls kein anderer Standort gewählt wurde.
 @override@JsonKey() final  String selectedCity;
+/// 🌍 Gibt an, ob die Geolocation (GPS) verwendet wird oder ein manueller Standort gewählt wurde.
+/// - Standardwert ist `true`, d.h., die App verwendet **automatisch den aktuellen Standort**.
 @override@JsonKey() final  bool useGeolocation;
+/// 🌦 Die aktuellen Wetterdaten, falls vorhanden.
+/// - `WeatherData?` bedeutet: **Kann `null` sein**, wenn noch keine Daten geladen wurden oder ein Fehler aufgetreten ist.
 @override final  WeatherData? weatherData;
+/// ⏳ Zeigt an, ob gerade **Wetterdaten geladen** werden.
+/// - Standardwert ist `false`, d.h., anfangs wird **kein Ladevorgang** ausgeführt.
+/// - Falls die App gerade neue Wetterdaten lädt, wird dieser Wert `true` gesetzt.
 @override@JsonKey() final  bool isLoading;
+/// ⚠️ Falls ein Fehler auftritt (z. B. API nicht erreichbar), wird die **Fehlermeldung hier gespeichert**.
+/// - `String?` bedeutet: **Kann `null` sein**, wenn kein Fehler vorliegt.
 @override final  String? errorMessage;
 
 /// Create a copy of WeatherState

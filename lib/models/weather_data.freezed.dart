@@ -16,7 +16,18 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WeatherData {
 
- String get location; double get temperature; String get weatherCondition; double get windSpeed; double get humidity; List<double> get hourlyTemperature; List<double> get hourlyRainProbabilities; List<String> get hourlyTimes; String get timezone; List<DailyWeather> get dailyWeather;
+ String get location;// 📍 Name des Standorts (z.B. "Berlin, Deutschland")
+ double get temperature;// 🌡 Aktuelle Temperatur in °C
+ String get weatherCondition;// 🌤 Beschreibung des aktuellen Wetters ("Bewölkt", "Sonnig", etc.)
+ double get windSpeed;// 💨 Windgeschwindigkeit in km/h
+ double get humidity;// 💦 Luftfeuchtigkeit in %
+// 📌 Stündliche Vorhersagewerte (für die nächsten 24 Stunden)
+ List<double> get hourlyTemperature;// 🌡 Temperaturen pro Stunde (Liste von °C-Werten)
+ List<double> get hourlyRainProbabilities;// 🌧 Regenwahrscheinlichkeit pro Stunde (%)
+ List<String> get hourlyTimes;// ⏰ Zeitpunkte für die stündlichen Werte (z.B. ["10:00", "11:00", ...])
+ String get timezone;// 🌍 Zeitzone des Standorts (z.B. "Europe/Berlin")
+// 🔥 7-Tage-Vorhersage (Liste von DailyWeather-Objekten, siehe `daily_weather.dart`)
+ List<DailyWeather> get dailyWeather;
 /// Create a copy of WeatherData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -93,33 +104,50 @@ class _WeatherData implements WeatherData {
   factory _WeatherData.fromJson(Map<String, dynamic> json) => _$WeatherDataFromJson(json);
 
 @override final  String location;
+// 📍 Name des Standorts (z.B. "Berlin, Deutschland")
 @override final  double temperature;
+// 🌡 Aktuelle Temperatur in °C
 @override final  String weatherCondition;
+// 🌤 Beschreibung des aktuellen Wetters ("Bewölkt", "Sonnig", etc.)
 @override final  double windSpeed;
+// 💨 Windgeschwindigkeit in km/h
 @override final  double humidity;
+// 💦 Luftfeuchtigkeit in %
+// 📌 Stündliche Vorhersagewerte (für die nächsten 24 Stunden)
  final  List<double> _hourlyTemperature;
+// 💦 Luftfeuchtigkeit in %
+// 📌 Stündliche Vorhersagewerte (für die nächsten 24 Stunden)
 @override List<double> get hourlyTemperature {
   if (_hourlyTemperature is EqualUnmodifiableListView) return _hourlyTemperature;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_hourlyTemperature);
 }
 
+// 🌡 Temperaturen pro Stunde (Liste von °C-Werten)
  final  List<double> _hourlyRainProbabilities;
+// 🌡 Temperaturen pro Stunde (Liste von °C-Werten)
 @override List<double> get hourlyRainProbabilities {
   if (_hourlyRainProbabilities is EqualUnmodifiableListView) return _hourlyRainProbabilities;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_hourlyRainProbabilities);
 }
 
+// 🌧 Regenwahrscheinlichkeit pro Stunde (%)
  final  List<String> _hourlyTimes;
+// 🌧 Regenwahrscheinlichkeit pro Stunde (%)
 @override List<String> get hourlyTimes {
   if (_hourlyTimes is EqualUnmodifiableListView) return _hourlyTimes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_hourlyTimes);
 }
 
+// ⏰ Zeitpunkte für die stündlichen Werte (z.B. ["10:00", "11:00", ...])
 @override final  String timezone;
+// 🌍 Zeitzone des Standorts (z.B. "Europe/Berlin")
+// 🔥 7-Tage-Vorhersage (Liste von DailyWeather-Objekten, siehe `daily_weather.dart`)
  final  List<DailyWeather> _dailyWeather;
+// 🌍 Zeitzone des Standorts (z.B. "Europe/Berlin")
+// 🔥 7-Tage-Vorhersage (Liste von DailyWeather-Objekten, siehe `daily_weather.dart`)
 @override List<DailyWeather> get dailyWeather {
   if (_dailyWeather is EqualUnmodifiableListView) return _dailyWeather;
   // ignore: implicit_dynamic_type

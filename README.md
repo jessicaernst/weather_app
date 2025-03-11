@@ -1,6 +1,6 @@
 # 🌦 Weather App
 
-## 📌 Übersicht
+## 💌 Übersicht
 Die **Weather App** ist eine Flutter-App zur Anzeige aktueller Wetterdaten sowie einer **stündlichen** und **7-Tage-Vorhersage**. Sie nutzt **Open-Meteo** für Wetterdaten und **OpenStreetMap** für Reverse Geocoding, um den Standortnamen aus den GPS-Koordinaten zu bestimmen.
 
 ## ✨ Features
@@ -10,7 +10,7 @@ Die **Weather App** ist eine Flutter-App zur Anzeige aktueller Wetterdaten sowie
 - ⏳ **Stündliche Vorhersage:** Wetterdaten für die kommenden Stunden inklusive Uhrzeit.
 - 📅 **7-Tage-Vorhersage:** Wetterdaten für die nächsten 7 Tage.
 - 💾 **Speicherung des Standorts und der Wetterdaten** zur Wiederverwendung.
-- 🗑 **Lösch-Funktion für den Wetterverlauf**.
+- 🛡 **Lösch-Funktion für den Wetterverlauf**.
 
 ## 📂 Projektstruktur
 ```
@@ -42,6 +42,8 @@ Die **Weather App** ist eine Flutter-App zur Anzeige aktueller Wetterdaten sowie
 /services
  ├── location_service.dart (Standort-Handling & Reverse Geocoding)
  ├── storage_service.dart (Speicherung von Wetter- und Standortdaten)
+/test
+ ├── weather_service_test.dart (Unit-Tests für WeatherNotifier)
 main.dart (App-Startpunkt)
 ```
 
@@ -70,6 +72,74 @@ dependencies:
   json_annotation: ^4.9.0
   geolocator: ^13.0.2
 ```
+
+## 🔧 Unit-Tests mit Mocktail
+Die App enthält Unit-Tests für den `WeatherNotifier`, die mit `mocktail` simulierte API-Antworten testen.
+
+### 🌟 Unit-Test-Beispiel:
+```dart
+class MockHttpClient extends Mock implements http.Client {}
+
+void main() {
+  group('WeatherNotifier', () {
+    late MockHttpClient mockHttpClient;
+    late ProviderContainer container;
+
+    setUp(() {
+      mockHttpClient = MockHttpClient();
+      container = ProviderContainer(
+        overrides: [
+          httpClientProvider.overrideWithValue(mockHttpClient),
+          weatherNotifierProvider.overrideWith(WeatherNotifier.new),
+        ],
+      );
+      registerFallbackValue(Uri.parse(''));
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test(
+      'fetchWeather gibt Wetterdaten zurück, wenn die API erfolgreich antwortet',
+      () async {
+        final cityName = 'Bremen';
+        final expectedData = {
+          'current_weather': {
+            'temperature': 20.0,
+            'windspeed': 6.2,
+            'weathercode': 1,
+            'time': '2025-03-11T14:00',
+          },
+          'timezone': 'Europe/Berlin',
+          'hourly': {
+            'time': ['2025-03-11T14:00', '2025-03-11T15:00'],
+            'temperature_2m': [20.0, 21.0],
+            'precipitation_probability': [5.0, 6.0],
+          },
+        };
+
+        when(() => mockHttpClient.get(any())).thenAnswer(
+          (_) async => http.Response(json.encode(expectedData), 200),
+        );
+
+        final notifier = container.read(weatherNotifierProvider.notifier);
+        final result = await notifier.fetchWeather(53.0793, 8.8017, cityName);
+
+        expect(result.temperature, equals(20.0));
+        expect(result.location, equals(cityName));
+        expect(result.windSpeed, equals(6.2));
+        expect(result.weatherCondition, equals('1'));
+        verify(() => mockHttpClient.get(any())).called(1);
+      },
+    );
+  });
+}
+```
+
+Diese Tests stellen sicher, dass der `WeatherNotifier` korrekt mit der API interagiert und Fehler korrekt behandelt werden.
+
+
 
 ## 🔧 Installation & Setup
 ### 📥 Repository klonen
