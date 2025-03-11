@@ -8,6 +8,8 @@ void main() async {
   // Setup logging for the application
   LoggerUtil.setupLogging();
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Set the preferred device orientations
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
