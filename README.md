@@ -43,7 +43,7 @@ Die **Weather App** ist eine Flutter-App zur Anzeige aktueller Wetterdaten sowie
  ├── location_service.dart (Standort-Handling & Reverse Geocoding)
  ├── storage_service.dart (Speicherung von Wetter- und Standortdaten)
 /test
- ├── weather_service_test.dart (Unit-Tests für WeatherNotifier)
+ ├── weather_service_test.dart (Unit-Tests für WeatherNotifier, Reverse Geocoding)
 main.dart (App-Startpunkt)
 ```
 
