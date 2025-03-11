@@ -148,43 +148,78 @@ class WeatherNotifier extends _$WeatherNotifier {
         final jsonData = json.decode(response.body);
         final weatherData = jsonData['current_weather'];
         final hourlyData = jsonData['hourly'];
-        final dailyData = jsonData['daily']; // 🔥 Neu: Tägliche Daten
+        final dailyData = jsonData['daily'];
 
         final String timezone = jsonData['timezone'];
 
-        // **📌 Stundenwerte**
+        // 🕒 Liste mit den Zeitstempeln (als Strings) aus der API holen und in `DateTime` umwandeln
         final List<DateTime> hourlyTimes =
             List<String>.from(
-              hourlyData['time'],
-            ).map((time) => DateTime.parse(time)).toList();
+                  // 🔄 Die Liste von Strings aus der API holen
+                  hourlyData['time'], // 🕒 API liefert z. B. ["2025-03-11T00:00", "2025-03-11T01:00"]
+                )
+                .map(
+                  (time) => DateTime.parse(time),
+                ) // 🛠 Jeden Zeit-String in ein `DateTime`-Objekt konvertieren
+                .toList(); // ✅ Ergebnis ist eine Liste von `DateTime`-Objekten
+
+        // 🌡 Temperaturen für jede Stunde aus der API holen und in eine `double`-Liste umwandeln
         final List<double> hourlyTemps = List<double>.from(
-          hourlyData['temperature_2m'].map((temp) => (temp as num).toDouble()),
-        );
+          hourlyData['temperature_2m'] // 🌡 Holt eine Liste mit Temperaturen, z. B. [5.2, 4.8, 4.3]
+              .map(
+                (temp) => (temp as num).toDouble(),
+              ), // 🔄 Jede Temperatur in `double` umwandeln, falls nötig
+        ); // ✅ Ergebnis ist eine `List<double>` mit den Temperaturen für jede Stunde
+
+        // 🌧 Regenwahrscheinlichkeit für jede Stunde aus der API holen und umwandeln
         final List<double> hourlyRain = List<double>.from(
-          hourlyData['precipitation_probability'].map(
-            (prob) => (prob as num).toDouble(),
-          ),
+          hourlyData['precipitation_probability'] // 🌧 Liste mit Regenwahrscheinlichkeiten, z. B. [10, 20, 30]
+              .map(
+                (prob) => (prob as num).toDouble(),
+              ), // 🔄 Jede Wahrscheinlichkeit in `double` umwandeln
+        ); // ✅ Ergebnis ist eine `List<double>` mit den Regenwahrscheinlichkeiten für jede Stunde
+
+        // ⏰ Holt die aktuelle Zeit aus den Wetterdaten und wandelt sie in ein `DateTime`-Objekt um
+        final DateTime nowLocal = DateTime.parse(
+          weatherData['time'],
+        ); // 🕒 Beispiel: "2025-03-11T14:00"
+
+        // 🔍 Suche den Index der aktuellen Stunde in `hourlyTimes`
+        int startIndex = hourlyTimes.indexWhere(
+          (time) =>
+              time.hour ==
+              nowLocal
+                  .hour, // 🎯 Vergleicht jede gespeicherte Stunde mit der aktuellen Stunde
         );
 
-        final DateTime nowLocal = DateTime.parse(weatherData['time']);
-        int startIndex = hourlyTimes.indexWhere(
-          (time) => time.hour == nowLocal.hour,
-        );
+        // ❗ Falls die aktuelle Stunde nicht in der Liste gefunden wird, setzen wir den Startindex auf 0
         if (startIndex == -1) startIndex = 0;
 
         // **📌 Tägliche Werte**
+        // 🔥 Erstellt eine Liste von DailyWeather-Objekten für die 7-Tage-Vorhersage.
         final List<DailyWeather> dailyForecast = List.generate(
+          // 🕒 Die Länge der Liste entspricht der Anzahl der Tage in den API-Daten.
           dailyData['time'].length,
+
+          // 🔄 Für jeden Tag in der API-Antwort wird ein DailyWeather-Objekt erstellt.
           (index) => DailyWeather(
+            // 📅 Das Datum des jeweiligen Tages wird aus der API geholt und in ein DateTime-Objekt umgewandelt.
             date: DateTime.parse(dailyData['time'][index]),
+
+            // 🌡 Die Mindesttemperatur für diesen Tag wird geholt und in ein Double umgewandelt.
             minTemp: (dailyData['temperature_2m_min'][index] as num).toDouble(),
+
+            // 🔥 Die Maximaltemperatur für diesen Tag wird ebenfalls geholt und in ein Double umgewandelt.
             maxTemp: (dailyData['temperature_2m_max'][index] as num).toDouble(),
+
+            // 🌧 Die Regenwahrscheinlichkeit für diesen Tag wird ausgelesen und zu einem Double konvertiert.
             precipitationProbability:
                 (dailyData['precipitation_probability_mean'][index] as num)
                     .toDouble(),
-            weatherCode:
-                dailyData['weathercode'][index]
-                    as int, // 🔥 Wetter-Code für Icons
+
+            // ☁️ Der Wettercode für diesen Tag wird ausgelesen und als Integer gespeichert.
+            //    Dieser Code bestimmt später, welches Icon für das Wetter angezeigt wird.
+            weatherCode: dailyData['weathercode'][index] as int,
           ),
         );
 
