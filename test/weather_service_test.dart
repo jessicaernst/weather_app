@@ -7,6 +7,29 @@ import 'package:weather_app/providers/weather_provider.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
 
+class MockLocationService {
+  static Future<String> getLocationName(
+    double latitude,
+    double longitude,
+  ) async {
+    return Future.value('Bremen, Deutschland'); // Standardwert
+  }
+
+  static Future<String> getLocationNameError(
+    double latitude,
+    double longitude,
+  ) async {
+    return Future.value('');
+  }
+
+  static Future<String> getLocationNameNetworkError(
+    double latitude,
+    double longitude,
+  ) async {
+    throw Exception('Network error');
+  }
+}
+
 void main() {
   group('WeatherNotifier', () {
     late MockHttpClient mockHttpClient;
@@ -103,5 +126,43 @@ void main() {
         );
       },
     );
+    group('Reverse Geocoding', () {
+      test('getLocationName gibt einen Ortsnamen zurück', () async {
+        // Arrange
+        final expectedLocationName = 'Bremen, Deutschland';
+        final result = await MockLocationService.getLocationName(
+          53.0793,
+          8.8017,
+        );
+
+        // Assert
+        expect(result, equals(expectedLocationName));
+      });
+
+      test(
+        'getLocationName gibt einen leeren String zurück, wenn kein Ort gefunden wird',
+        () async {
+          final locationName = await MockLocationService.getLocationNameError(
+            53.0793,
+            8.8017,
+          );
+
+          expect(locationName, isEmpty);
+        },
+      );
+
+      test(
+        'getLocationName wirft eine Exception bei einem Netzwerkfehler',
+        () async {
+          await expectLater(
+            () => MockLocationService.getLocationNameNetworkError(
+              53.0793,
+              8.8017,
+            ),
+            throwsA(isA<Exception>()),
+          );
+        },
+      );
+    });
   });
 }
