@@ -83,7 +83,7 @@ flutter pub get
 
 ### 🛠 Code generieren (falls nötig)
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### 🏰 **Berechtigungen setzen (Android & iOS)**
