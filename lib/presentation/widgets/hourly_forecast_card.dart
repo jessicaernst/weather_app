@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:logging/logging.dart';
 import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_icons/weather_icons.dart';
+
+final Logger _logger = Logger('HourlyForecastCard');
 
 class HourlyForeCastCard extends StatelessWidget {
   const HourlyForeCastCard({
@@ -16,7 +20,14 @@ class HourlyForeCastCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _logger.info(
+      '🔄 Rebuild HourlyForeCastCard: $timeLabel, Temp: ${weatherData.hourlyTemperature[actualIndex]}°C',
+    );
+
     return Container(
+      key: ValueKey(
+        timeLabel,
+      ), // 🔥 Fügt ein Key hinzu, damit Flutter es neu baut!
       width: 100,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       padding: const EdgeInsets.all(8),

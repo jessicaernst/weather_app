@@ -19,6 +19,9 @@ class HourlyForecast extends ConsumerWidget {
     _logger.info('Baue stündliche Vorhersage auf...');
 
     final weatherState = ref.watch(weatherNotifierProvider);
+    _logger.info(
+      '📢 UI empfängt Wetter-Update: ${weatherState.value?.weatherData?.hourlyTimes}',
+    );
 
     return weatherState.when(
       // 🔄 Falls Daten noch geladen werden
@@ -76,6 +79,7 @@ class HourlyForecast extends ConsumerWidget {
         }
 
         _logger.info('🔢 Berechneter Startindex: $startIndex');
+        _logger.info('📌 UI bekommt Stundenzeiten: ${weatherData.hourlyTimes}');
 
         return Column(
           children: [

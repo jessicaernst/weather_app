@@ -104,23 +104,32 @@ class WeatherNotifier extends _$WeatherNotifier {
     double longitude,
     String locationName,
   ) async {
+    // Setze den Ladezustand
     state = const AsyncValue.loading();
 
+    // Rufe Wetterdaten von der API ab
     final jsonData = await _repository.fetchWeatherData(latitude, longitude);
     final timezoneId = jsonData['timezone'] ?? 'UTC';
 
+    _log.info('🌎 Standort: $locationName');
     _log.info('🕒 API gibt Zeitzone zurück: $timezoneId');
 
+    // Wetterdaten aus der API parsen
     final weather = _service.parseWeatherData(jsonData, locationName);
 
-    // ✅ Zeitzonen-Korrektur für stündliche Zeiten direkt im Notifier
-    final correctedTimes =
+    _log.info('⏳ Original-Zeiten aus der API: ${weather.hourlyTimes}');
+
+    // **Korrekte Ortszeiten berechnen**
+    final List<String> correctedTimes =
         weather.hourlyTimes.map((utcTime) {
           return convertUtcToLocal(utcTime, timezoneId);
         }).toList();
 
     final correctedWeather = weather.copyWith(hourlyTimes: correctedTimes);
 
+    _log.info('✅ Korrigierte Zeiten für $locationName: $correctedTimes');
+
+    // Speichere den Standort für zukünftige Aufrufe
     await LocationService.saveLastLocation(
       latitude,
       longitude,
@@ -130,42 +139,65 @@ class WeatherNotifier extends _$WeatherNotifier {
 
     _log.info('✅ Wetter für $locationName geladen & gespeichert.');
 
-    return WeatherState(
-      selectedCity: locationName,
-      useGeolocation: true,
-      weatherData: correctedWeather,
+    _log.info(
+      '🧐 Vor dem Setzen des States: ${state.value?.weatherData?.hourlyTimes}',
     );
+
+    state = AsyncValue.data(
+      WeatherState(
+        selectedCity: locationName,
+        useGeolocation: true,
+        weatherData: correctedWeather,
+      ),
+    );
+
+    _log.info(
+      '✅ Nach dem Setzen des States: ${state.value?.weatherData?.hourlyTimes}',
+    );
+
+    _log.info(
+      '✅ Wetter-Status aktualisiert. Endgültige Stundenzeiten für UI: ${state.value?.weatherData?.hourlyTimes}',
+    );
+
+    return state.value!;
   }
 
-  /// 🕒 **Zeitzonen-Korrektur für UTC-Zeitangaben**
-  /// - Wandelt eine UTC-Zeit (`hh:mm`) in die lokale Zeit für die `timezoneId` um.
-  /// - Stellt sicher, dass Sommer- und Winterzeit korrekt gehandhabt werden.
+  /// 🕒 **Konvertiert eine UTC-Zeit (`HH:mm`) in die lokale Zeit der angegebenen Zeitzone**
+  /// 🕒 **Konvertiert eine UTC-Zeit (`HH:mm`) in die lokale Zeit der angegebenen Zeitzone**
   String convertUtcToLocal(String utcTime, String timezoneId) {
     try {
-      final tz.Location location = tz.getLocation(timezoneId);
-      final DateTime now = DateTime.now();
-      final DateTime utcDateTime = DateFormat('HH:mm').parse(utcTime);
-      final DateTime utcFullDate =
-          DateTime(
-            now.year,
-            now.month,
-            now.day,
-            utcDateTime.hour,
-            utcDateTime.minute,
-          ).toUtc();
+      _log.info('🌍 Konvertiere UTC-Zeit $utcTime in Zeitzone $timezoneId');
 
-      final tz.TZDateTime localTime = tz.TZDateTime.from(utcFullDate, location);
+      // 🌍 Korrekte Zeitzone für den Standort abrufen
+      final tz.Location location = tz.getLocation(timezoneId);
+
+      // 🕒 Stelle sicher, dass das UTC-Datum nicht zu Problemen führt (1970-01-01 als Basis)
+      final DateTime utcDateTime = DateFormat('HH:mm').parse(utcTime);
+
+      // 📅 Vollen UTC-Zeitstempel mit Dummy-Datum erstellen
+      final DateTime fullUtcDate = DateTime.utc(
+        1970,
+        1,
+        1,
+        utcDateTime.hour,
+        utcDateTime.minute,
+      );
+
+      // 🌍 Konvertiere in die lokale Zeit mit der angegebenen Zeitzone
+      final tz.TZDateTime localTime = tz.TZDateTime.from(fullUtcDate, location);
+
+      // ⏰ Formatierte Zeit für die UI zurückgeben
       final String formattedTime = DateFormat('HH:mm').format(localTime);
 
       _log.fine(
-        '🌍 Umgerechnet: UTC=$utcTime → Lokal=$formattedTime ($timezoneId)',
+        '✅ Umrechnung erfolgreich: UTC=$utcTime → Lokal=$formattedTime ($timezoneId)',
       );
       return formattedTime;
     } catch (e) {
       _log.severe(
         '⚠️ Fehler bei Zeitzonen-Umrechnung für $utcTime in $timezoneId: $e',
       );
-      return utcTime; // Falls Fehler, einfach UTC beibehalten
+      return utcTime; // Falls Fehler, bleibt UTC
     }
   }
 

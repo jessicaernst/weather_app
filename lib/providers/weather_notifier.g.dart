@@ -6,7 +6,7 @@ part of 'weather_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$weatherNotifierHash() => r'b4785bca73bf534170904d83527efedf0a6c8ffd';
+String _$weatherNotifierHash() => r'301118376f368eaabaddcdeeee882c57bf5dbd72';
 
 /// 🌍 **WeatherNotifier** – Verwalte den Wetterzustand (Code-Generated)
 /// - Nutzt Repository & Service für API-Calls & lokale Speicherung.
