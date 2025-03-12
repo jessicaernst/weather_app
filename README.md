@@ -137,7 +137,7 @@ void fetchWeather() {
 - **API gibt falsche Daten zurück?** Überprüfe, ob die Open-Meteo-API erreichbar ist.
 
 ## ⚠ Hinweis
-Dieses Projekt erfordert noch **Refactoring**, um den `WeatherNotifier` weiter zu optimieren.
+In diesem Projekt da das UI unterwegs entstanden ist, habe ich darauf verzichtet Colors, TextStyles usw. auszulagern
 
 ## 📷 Screenshots
 
