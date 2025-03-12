@@ -2,6 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 /// 📌 Interface für Wetterbeschreibung & Icons
+/// - Wird von `WeatherData` implementiert
+/// - Enthält Methoden für Wetterbeschreibung und Wetter-Icons
+/// - Wird in `CurrentWeatherInfo` verwendet
+/// - Wird in `WeatherData` implementiert
+/// - Wird in `WeatherCodeInfo` gemischt
+/// - Wird in `WeatherNotifier` verwendet
+/// - Wird in `WeatherService` verwendet
+/// - Wird in `WeatherServiceMock` verwendet
+/// - Wird in `WeatherServiceOpenWeather` verwendet
+/// - Wird in `WeatherServiceWeatherAPI` verwendet
+/// - Die Codes für die Wetterbeschreibung und Icons stammen von der Wetter-API
+/// - Die Codes sind in der API-Dokumentation zu finden
+/// - Die Codes basieren auf der **WMO-Nummerierung** (World Meteorological Organization)
 mixin WeatherCodeInfo {
   int get weatherCode; // 🌤 Wetter-Code aus der API
 
