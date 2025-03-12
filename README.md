@@ -236,6 +236,8 @@ Da es sich nur um ein Übungsprojekt handelt und es mir eher um API's und die Lo
 
 Für die Möglichkeit auch kleinere Orte und Stadtteile mit ausgeben zu können habe ich mich für open street map entschieden beim Reverse Geocoding, ist aber aktuell nicht so weit implementiert.
 
+Und das Projekt braucht noch finales Refactoring, es ist zuviel im Notifier noch und noch 1-2 fixes
+
 ---
 
 ## 🖼️ Screenshots:
