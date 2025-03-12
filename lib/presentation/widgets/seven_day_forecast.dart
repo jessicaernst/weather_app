@@ -55,20 +55,27 @@ class SevenDayForecast extends StatelessWidget {
                       WeatherIcons.thermometer, // 🌡 Temperatur-Icon
                       size: 16,
                     ),
-                    const SizedBox(width: 8), // 🛠 Abstand für bessere Optik
+                    const SizedBox(width: 4), // 🛠 Abstand für bessere Optik
                     Text(
-                      '${dailyForecast.minTemp.round()}-${dailyForecast.maxTemp.round()}°C ',
+                      '${dailyForecast.minTemp.round()}-${dailyForecast.maxTemp.round()}°C |',
                     ),
                     const SizedBox(
-                      width: 16,
+                      width: 4,
                     ), // 🛠 Mehr Abstand zwischen den Elementen
                     const Icon(
                       WeatherIcons.rain, // 🌧 Regen-Icon
                       size: 16,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     Text(
-                      '${dailyForecast.precipitationProbability.round()}% Regen',
+                      '${dailyForecast.precipitationProbability.round()}% Regen |',
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      dailyForecast.getWeatherDescription(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
                     ),
                   ],
                 ),
