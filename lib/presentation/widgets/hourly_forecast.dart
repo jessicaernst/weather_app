@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/models/weather_data.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 // Logger für Debugging und Fehleranalyse
 final Logger _logger = Logger('HourlyForecast');
@@ -92,9 +93,10 @@ class HourlyForecast extends StatelessWidget {
                   children: [
                     // 🕰 Uhrzeit anzeigen (z. B. "Jetzt" oder "18:00")
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       spacing: 10,
                       children: [
-                        Icon(weatherData.getWeatherIcon(), size: 24),
+                        Icon(weatherData.getWeatherIcon(), size: 16),
                         Text(
                           timeLabel,
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -104,16 +106,30 @@ class HourlyForecast extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     // 🌡 Temperatur anzeigen (mit einer Nachkommastelle)
-                    Text(
-                      '🌡 ${weatherData.hourlyTemperature[actualIndex].toStringAsFixed(1)}°C',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 10,
+                      children: [
+                        const Icon(WeatherIcons.thermometer, size: 16),
+                        Text(
+                          '${weatherData.hourlyTemperature[actualIndex].toStringAsFixed(1)}°C',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 5),
 
                     // 🌧 Regenwahrscheinlichkeit anzeigen
-                    Text(
-                      '🌧 ${weatherData.hourlyRainProbabilities[actualIndex]}%',
-                      style: const TextStyle(color: Colors.blue),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 10,
+                      children: [
+                        const Icon(WeatherIcons.rain, size: 16),
+                        Text(
+                          '${weatherData.hourlyRainProbabilities[actualIndex]}%',
+                          style: const TextStyle(color: Colors.blue),
+                        ),
+                      ],
                     ),
                   ],
                 ),

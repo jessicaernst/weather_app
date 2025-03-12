@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/models/weather_data.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 class SevenDayForecast extends StatelessWidget {
   const SevenDayForecast({super.key, required this.weatherData});
@@ -48,9 +49,28 @@ class SevenDayForecast extends StatelessWidget {
                 title: Text(
                   'Tag ${index + 1}',
                 ), // 📅 Zeigt den aktuellen Tag an
-                subtitle: Text(
-                  '🌡 ${dailyForecast.minTemp.round()}-${dailyForecast.maxTemp.round()}°C '
-                  '| 🌧 ${dailyForecast.precipitationProbability.round()}% Regen', // 🔥 Zeigt Temperatur & Regenwahrscheinlichkeit
+                subtitle: Row(
+                  children: [
+                    const Icon(
+                      WeatherIcons.thermometer, // 🌡 Temperatur-Icon
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8), // 🛠 Abstand für bessere Optik
+                    Text(
+                      '${dailyForecast.minTemp.round()}-${dailyForecast.maxTemp.round()}°C ',
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ), // 🛠 Mehr Abstand zwischen den Elementen
+                    const Icon(
+                      WeatherIcons.rain, // 🌧 Regen-Icon
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${dailyForecast.precipitationProbability.round()}% Regen',
+                    ),
+                  ],
                 ),
               ),
             );

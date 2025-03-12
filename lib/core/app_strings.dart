@@ -9,11 +9,7 @@ abstract class AppStrings {
   }
 
   static String windSpeed(double speed) {
-    return '💨 Windgeschwindigkeit: ${speed.toStringAsFixed(1)} km/h';
-  }
-
-  static String humidity(double humidity) {
-    return '💧 Luftfeuchtigkeit: ${humidity.toStringAsFixed(1)}%';
+    return 'Windgeschwindigkeit: ${speed.toStringAsFixed(1)} km/h';
   }
 
   // 📍 Standort & Wetteraktualisierung
