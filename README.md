@@ -245,7 +245,8 @@ Und das Projekt braucht noch finales Refactoring, es ist zuviel im Notifier noch
 
 ## 🖼️ Screenshots:
 
-![Screenshot 2025-03-10 at 19 07 16](https://github.com/user-attachments/assets/7d26706d-03cc-4b26-8820-0c177d50bf9f)
+![Screenshot 2025-03-12 at 12 30 05](https://github.com/user-attachments/assets/1adf80a2-6d3f-42e6-b526-ebf301a5a520)
+
 
 
 
