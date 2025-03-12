@@ -99,11 +99,6 @@ dart run build_runner build --delete-conflicting-outputs
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 ```
 
-### ⚡ App starten
-```bash
-flutter run
-```
-
 ## 🌐 API-Nutzung
 ### 🔄 Open-Meteo API (Wetterdaten)
 ```sh
