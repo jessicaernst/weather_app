@@ -39,6 +39,8 @@ class WeatherNotifier extends _$WeatherNotifier {
     'Hamburg': (53.5511, 9.9937),
     'Köln': (50.9375, 6.9603),
     'San José': (9.9281, -84.0907),
+    'London': (51.5074, -0.1278),
+    'New York': (40.7128, -74.0060),
   };
 
   /// ✅ **Standard-Konstruktor erforderlich für Riverpod**
