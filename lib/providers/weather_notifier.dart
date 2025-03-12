@@ -1,5 +1,7 @@
+import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/models/weather_state.dart';
 import 'package:weather_app/providers/repository_provider.dart';
@@ -36,6 +38,7 @@ class WeatherNotifier extends _$WeatherNotifier {
     'München': (48.1351, 11.5820),
     'Hamburg': (53.5511, 9.9937),
     'Köln': (50.9375, 6.9603),
+    'San José': (9.9281, -84.0907),
   };
 
   /// ✅ **Standard-Konstruktor erforderlich für Riverpod**
@@ -48,15 +51,12 @@ class WeatherNotifier extends _$WeatherNotifier {
   /// - Falls kein gespeicherter Standort existiert, wird GPS-Ortung genutzt.
   @override
   Future<WeatherState> build() async {
-    _repository = ref.read(weatherRepositoryProvider); // 🔄 Holt das Repository
-    _service = ref.read(weatherServiceProvider); // 🔄 Holt den Service
+    _repository = ref.read(weatherRepositoryProvider);
+    _service = ref.read(weatherServiceProvider);
 
     _log.info('🔍 Lade gespeicherte Standortinformationen...');
 
-    // 💾 Prüft, ob es einen gespeicherten Standort gibt.
     final storedLocation = await LocationService.loadLastLocation();
-
-    // ✅ Falls ein Standort gespeichert wurde, lade Wetterdaten für diesen Ort.
     if (storedLocation != null) {
       return fetchWeather(
         storedLocation['latitude'],
@@ -65,7 +65,6 @@ class WeatherNotifier extends _$WeatherNotifier {
       );
     }
 
-    // 🚀 Falls kein gespeicherter Standort existiert, nutze GPS-Ortung.
     return fetchWeatherForCurrentLocation();
   }
 
@@ -76,30 +75,21 @@ class WeatherNotifier extends _$WeatherNotifier {
   Future<WeatherState> fetchWeatherForCurrentLocation() async {
     try {
       _log.info('📡 Ermittle aktuellen Standort...');
-
-      // ⏳ Setzt den State auf "Lädt...", damit die UI weiß, dass Daten geladen werden.
       state = const AsyncValue.loading();
 
-      // 🛰 Bestimmt die aktuelle Position (GPS-Koordinaten).
       final position = await LocationService.determinePosition();
-
-      // 📍 Holt den Ortsnamen basierend auf den Koordinaten (z.B. "Berlin, Deutschland").
       String locationName = await LocationService.getLocationName(
         position.latitude,
         position.longitude,
       );
 
-      // ❗ Falls kein Name gefunden wird, setze "Aktueller Standort" als Fallback.
       if (locationName.isEmpty) {
         locationName = 'Aktueller Standort';
       }
 
-      // 🌍 Holt die Wetterdaten für den aktuellen Standort.
       return fetchWeather(position.latitude, position.longitude, locationName);
     } catch (e) {
       _log.severe('❌ Fehler beim Abrufen des Standorts: $e');
-
-      // ❌ Falls ein Fehler auftritt, zeige diesen in der UI an.
       return WeatherState(
         errorMessage: 'Fehler beim Abrufen des Standorts: $e',
       );
@@ -114,31 +104,69 @@ class WeatherNotifier extends _$WeatherNotifier {
     double longitude,
     String locationName,
   ) async {
-    // ⏳ Setzt den UI-Status auf "Laden".
     state = const AsyncValue.loading();
 
-    // 📡 Ruft Wetterdaten über das Repository ab.
     final jsonData = await _repository.fetchWeatherData(latitude, longitude);
+    final timezoneId = jsonData['timezone'] ?? 'UTC';
 
-    // 🔄 Konvertiert die Rohdaten in ein `WeatherData`-Objekt.
+    _log.info('🕒 API gibt Zeitzone zurück: $timezoneId');
+
     final weather = _service.parseWeatherData(jsonData, locationName);
 
-    // 💾 Speichert den Standort in SharedPreferences für zukünftige Abrufe.
+    // ✅ Zeitzonen-Korrektur für stündliche Zeiten direkt im Notifier
+    final correctedTimes =
+        weather.hourlyTimes.map((utcTime) {
+          return convertUtcToLocal(utcTime, timezoneId);
+        }).toList();
+
+    final correctedWeather = weather.copyWith(hourlyTimes: correctedTimes);
+
     await LocationService.saveLastLocation(
       latitude,
       longitude,
-      true, // ✅ true bedeutet, dass GPS-Daten genutzt wurden.
+      true,
       locationName,
     );
 
     _log.info('✅ Wetter für $locationName geladen & gespeichert.');
 
-    // ✅ Gibt den aktuellen Wetterzustand zurück.
     return WeatherState(
       selectedCity: locationName,
       useGeolocation: true,
-      weatherData: weather,
+      weatherData: correctedWeather,
     );
+  }
+
+  /// 🕒 **Zeitzonen-Korrektur für UTC-Zeitangaben**
+  /// - Wandelt eine UTC-Zeit (`hh:mm`) in die lokale Zeit für die `timezoneId` um.
+  /// - Stellt sicher, dass Sommer- und Winterzeit korrekt gehandhabt werden.
+  String convertUtcToLocal(String utcTime, String timezoneId) {
+    try {
+      final tz.Location location = tz.getLocation(timezoneId);
+      final DateTime now = DateTime.now();
+      final DateTime utcDateTime = DateFormat('HH:mm').parse(utcTime);
+      final DateTime utcFullDate =
+          DateTime(
+            now.year,
+            now.month,
+            now.day,
+            utcDateTime.hour,
+            utcDateTime.minute,
+          ).toUtc();
+
+      final tz.TZDateTime localTime = tz.TZDateTime.from(utcFullDate, location);
+      final String formattedTime = DateFormat('HH:mm').format(localTime);
+
+      _log.fine(
+        '🌍 Umgerechnet: UTC=$utcTime → Lokal=$formattedTime ($timezoneId)',
+      );
+      return formattedTime;
+    } catch (e) {
+      _log.severe(
+        '⚠️ Fehler bei Zeitzonen-Umrechnung für $utcTime in $timezoneId: $e',
+      );
+      return utcTime; // Falls Fehler, einfach UTC beibehalten
+    }
   }
 
   /// 🏙 **Wechselt den Standort und lädt neue Wetterdaten**
