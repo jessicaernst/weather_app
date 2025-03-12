@@ -4,7 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/presentation/widgets/error_msg.dart';
 import 'package:weather_app/presentation/widgets/weather_page_content.dart';
-import 'package:weather_app/providers/weather_provider.dart';
+import 'package:weather_app/providers/weather_notifier.dart';
 
 final Logger _log = Logger('WeatherPage');
 
@@ -13,8 +13,8 @@ class WeatherPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ✅ Wetter-Status aus dem Provider abrufen (AsyncValue<WeatherState>)
     final weatherState = ref.watch(weatherNotifierProvider);
-    final weatherNotifier = ref.read(weatherNotifierProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,17 +23,17 @@ class WeatherPage extends ConsumerWidget {
       ),
       body: Center(
         child: weatherState.when(
-          data:
-              (state) => WeatherPageContent(
-                state: state,
-                weatherNotifier: weatherNotifier,
-              ),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          data: (state) => const WeatherPageContent(),
+          loading: () => const CircularProgressIndicator(),
           error: (err, _) {
-            _log.severe('Fehler beim Laden des Wetters: $err');
+            _log.severe('❌ Fehler beim Laden des Wetters: $err');
             return ErrorMessage(
               errorMessage: AppStrings.error(err),
-              onRetry: () => weatherNotifier.refreshWeather(),
+              onRetry:
+                  () =>
+                      ref
+                          .read(weatherNotifierProvider.notifier)
+                          .refreshWeather(),
             );
           },
         ),

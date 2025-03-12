@@ -1,30 +1,18 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'weather_provider.dart';
+part of 'weather_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$httpClientHash() => r'8c21f22632338286954dc297d3cf423520492f98';
+String _$weatherNotifierHash() => r'd51d9f588adb47dbe30cc6b07f301b706b6fed0b';
 
-/// See also [httpClient].
-@ProviderFor(httpClient)
-final httpClientProvider = AutoDisposeProvider<http.Client>.internal(
-  httpClient,
-  name: r'httpClientProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$httpClientHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef HttpClientRef = AutoDisposeProviderRef<http.Client>;
-String _$weatherNotifierHash() => r'0cefcdefbc0ae6424f403608cd66840d3399fa46';
-
-/// See also [WeatherNotifier].
+/// 🌍 **WeatherNotifier** – Verwalte den Wetterzustand (Code-Generated)
+/// - Nutzt Repository & Service für API-Calls & lokale Speicherung.
+/// - Aktualisiert Wetterdaten und speichert sie.
+///
+/// Copied from [WeatherNotifier].
 @ProviderFor(WeatherNotifier)
 final weatherNotifierProvider =
     AutoDisposeAsyncNotifierProvider<WeatherNotifier, WeatherState>.internal(
