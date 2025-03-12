@@ -68,6 +68,7 @@ dependencies:
   freezed_annotation: ^3.0.0
   mocktail: ^1.0.3
   intl: ^0.20.2
+  timezone: ^0.10.0
 ```
 
 ## 🔧 Installation & Setup
