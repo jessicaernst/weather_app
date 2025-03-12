@@ -41,9 +41,7 @@ dependencies:
   riverpod_lint: ^2.6.5
   riverpod_annotation: ^2.6.1
   flutter_riverpod: ^2.6.1
-  hooks_riverpod: ^2.6.1
   shared_preferences: ^2.5.2
-  shimmer: ^3.0.0
   google_fonts: ^6.2.1
   json_serializable: ^6.9.4
   freezed: ^3.0.3
