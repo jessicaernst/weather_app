@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_app/models/daily_weather.dart';
 
@@ -21,17 +22,34 @@ class WeatherService {
     final hourlyData = jsonData['hourly'] ?? {};
     final dailyData = jsonData['daily'] ?? {};
 
-    // 🕒 **Stündliche Vorhersage** – Hier wird die Liste der Temperaturen pro Stunde extrahiert.
-    // - Falls die API keine Werte liefert, wird eine **leere Liste** zurückgegeben.
+    // ⏳ **Zeitzonen-Offset holen (in Sekunden)**
+    // - Open-Meteo liefert UTC-Zeiten, daher müssen wir den Offset addieren.
+    final int timezoneOffset = jsonData['utc_offset_seconds'] ?? 0;
+
+    // 🕒 **Stündliche Vorhersage** – Liste der Stundenzeiten (im UTC-Format aus der API)
+    final List<String> hourlyTimesRaw = List<String>.from(
+      hourlyData['time'] ?? [],
+    );
+
+    // ✅ **Konvertiert UTC-Zeiten in lokale Zeit**
+    final List<String> hourlyTimes =
+        hourlyTimesRaw.map((utcTime) {
+          final utcDateTime =
+              DateTime.parse(utcTime).toUtc(); // ⏳ In UTC umwandeln
+          final localTime = utcDateTime.add(
+            Duration(seconds: timezoneOffset),
+          ); // 🕒 Zeitzonen-Offset anwenden
+          return DateFormat.Hm().format(localTime); // 📌 Format als "16:00"
+        }).toList();
+
+    // 🌡 **Temperaturen pro Stunde**
     final List<double> hourlyTemps = List<double>.from(
       (hourlyData['temperature_2m'] ?? []).map(
-        (temp) =>
-            (temp as num)
-                .toDouble(), // 🔄 Sicherstellen, dass alle Werte vom Typ `double` sind.
+        (temp) => (temp as num).toDouble(),
       ),
     );
 
-    // 🌧 **Stündliche Regenwahrscheinlichkeit** – Enthält die Regenwahrscheinlichkeit (%) für jede Stunde.
+    // 🌧 **Regenwahrscheinlichkeit pro Stunde**
     final List<double> hourlyRain = List<double>.from(
       (hourlyData['precipitation_probability'] ?? []).map(
         (prob) => (prob as num).toDouble(),
@@ -92,8 +110,8 @@ class WeatherService {
       // ☔ Falls `hourlyRainProbabilities` fehlt, setzen wir eine **leere Liste** als Fallback.
       hourlyRainProbabilities: hourlyRain,
 
-      // 🕒 Falls `hourlyTimes` fehlt, setzen wir eine **leere Liste** als Fallback.
-      hourlyTimes: List<String>.from(hourlyData['time'] ?? []),
+      // 🕒 **Jetzt mit richtiger lokaler Zeit**
+      hourlyTimes: hourlyTimes,
 
       // ⏰ Falls `timezone` fehlt, setzen wir **"UTC" als Standardwert**.
       timezone: jsonData['timezone'] ?? 'UTC',

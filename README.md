@@ -67,6 +67,7 @@ dependencies:
   freezed: ^3.0.3
   freezed_annotation: ^3.0.0
   mocktail: ^1.0.3
+  intl: ^0.20.2
 ```
 
 ## 🔧 Installation & Setup

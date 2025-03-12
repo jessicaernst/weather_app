@@ -61,16 +61,18 @@ class HourlyForecast extends StatelessWidget {
                 return const SizedBox(); // Verhindert Abstürze bei fehlerhaften Daten
               }
 
+              _logger.info(
+                '🕒 hourlyTimes Länge: ${weatherData.hourlyTimes.length}',
+              );
+              _logger.info('🔢 actualIndex: $actualIndex');
+              _logger.info('📌 hourlyTimes Inhalt: ${weatherData.hourlyTimes}');
+
               // 🕒 Die Uhrzeit für die Vorhersage-Zelle
               final String timeLabel =
                   (index == 0)
                       ? AppStrings
                           .now // Falls es die erste Zelle ist, wird "Jetzt" angezeigt
-                      : weatherData.hourlyTimes[actualIndex].substring(
-                        11, // Schneide das Datum weg → nur die Uhrzeit bleibt
-                        16, // Format: HH:mm
-                      );
-
+                      : weatherData.hourlyTimes[actualIndex];
               _logger.fine(
                 'Erstelle Vorhersage-Widget für $timeLabel: '
                 '${weatherData.hourlyTemperature[actualIndex]}°C, '
