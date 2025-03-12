@@ -24,7 +24,7 @@ class CurrentWeatherInfo extends StatelessWidget {
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
 
-        const SizedBox(height: 16), // Abstand für bessere Lesbarkeit
+        const SizedBox(height: 32), // Abstand für bessere Lesbarkeit
         // 🌤 Wetterlage (z. B. "Leicht bewölkt" oder "Starkregen")
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
