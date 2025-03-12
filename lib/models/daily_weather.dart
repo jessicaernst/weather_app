@@ -48,10 +48,10 @@ abstract class DailyWeather with _$DailyWeather {
       case 51:
       case 53:
       case 55:
-        return 'Sprühregen';
+        return 'Nieselregen';
       case 56:
       case 57:
-        return 'Gefrierender Sprühregen';
+        return 'Gefrierender Nieselregen';
       case 61:
       case 63:
       case 65:
