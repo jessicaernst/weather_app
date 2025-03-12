@@ -37,7 +37,7 @@ class CurrentWeatherInfo extends StatelessWidget {
             ),
           ],
         ),
-
+        const SizedBox(height: 8), // Abstand für bessere Lesbarkeit
         // 🌬 Windgeschwindigkeit anzeigen (z. B. "10 km/h")
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
