@@ -121,7 +121,7 @@ void main() {
         expect(result.temperature, equals(20.0)); // Temperatur prüfen
         expect(result.location, equals(cityName)); // Standortname prüfen
         expect(result.windSpeed, equals(6.2)); // Windgeschwindigkeit prüfen
-        expect(result.weatherCondition, equals('1')); // Wettercode prüfen
+        expect(result.weatherCode, equals('1')); // Wettercode prüfen
         expect(
           result.dailyWeather.isNotEmpty,
           isTrue,

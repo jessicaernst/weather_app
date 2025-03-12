@@ -25,20 +25,21 @@ class CurrentWeatherInfo extends StatelessWidget {
 
         const SizedBox(height: 16), // Abstand für bessere Lesbarkeit
         // 🌤 Wetterlage (z. B. "Leicht bewölkt" oder "Starkregen")
-        Text(
-          AppStrings.weatherCondition(weatherData.weatherCondition),
-          style: const TextStyle(fontSize: 18),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 8,
+          children: [
+            Icon(weatherData.getWeatherIcon()),
+            Text(
+              AppStrings.weatherCondition(weatherData.getWeatherDescription()),
+              style: const TextStyle(fontSize: 18),
+            ),
+          ],
         ),
 
         // 🌬 Windgeschwindigkeit anzeigen (z. B. "10 km/h")
         Text(
           AppStrings.windSpeed(weatherData.windSpeed),
-          style: const TextStyle(fontSize: 18),
-        ),
-
-        // 💦 Luftfeuchtigkeit anzeigen (z. B. "80%")
-        Text(
-          AppStrings.humidity(weatherData.humidity),
           style: const TextStyle(fontSize: 18),
         ),
       ],

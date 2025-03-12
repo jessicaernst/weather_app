@@ -87,8 +87,8 @@ as int,
 /// @nodoc
 @JsonSerializable()
 
-class _DailyWeather implements DailyWeather {
-  const _DailyWeather({required this.date, required this.minTemp, required this.maxTemp, required this.precipitationProbability, required this.weatherCode});
+class _DailyWeather extends DailyWeather {
+  const _DailyWeather({required this.date, required this.minTemp, required this.maxTemp, required this.precipitationProbability, required this.weatherCode}): super._();
   factory _DailyWeather.fromJson(Map<String, dynamic> json) => _$DailyWeatherFromJson(json);
 
 @override final  DateTime date;

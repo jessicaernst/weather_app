@@ -91,9 +91,15 @@ class HourlyForecast extends StatelessWidget {
                       MainAxisAlignment.center, // Elemente zentrieren
                   children: [
                     // 🕰 Uhrzeit anzeigen (z. B. "Jetzt" oder "18:00")
-                    Text(
-                      '⏰ $timeLabel',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Icon(weatherData.getWeatherIcon(), size: 24),
+                        Text(
+                          timeLabel,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
 

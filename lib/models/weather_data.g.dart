@@ -9,7 +9,7 @@ part of 'weather_data.dart';
 _WeatherData _$WeatherDataFromJson(Map<String, dynamic> json) => _WeatherData(
   location: json['location'] as String,
   temperature: (json['temperature'] as num).toDouble(),
-  weatherCondition: json['weatherCondition'] as String,
+  weatherCode: (json['weatherCode'] as num).toInt(),
   windSpeed: (json['windSpeed'] as num).toDouble(),
   humidity: (json['humidity'] as num).toDouble(),
   hourlyTemperature:
@@ -33,7 +33,7 @@ Map<String, dynamic> _$WeatherDataToJson(_WeatherData instance) =>
     <String, dynamic>{
       'location': instance.location,
       'temperature': instance.temperature,
-      'weatherCondition': instance.weatherCondition,
+      'weatherCode': instance.weatherCode,
       'windSpeed': instance.windSpeed,
       'humidity': instance.humidity,
       'hourlyTemperature': instance.hourlyTemperature,

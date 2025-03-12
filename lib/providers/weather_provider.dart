@@ -300,9 +300,8 @@ class WeatherNotifier extends _$WeatherNotifier {
           // 🌡 Falls `temperature` fehlt, setze 0.0 als Fallback
           temperature: (weatherData['temperature'] as num?)?.toDouble() ?? 0.0,
 
-          // ⛅ Falls `weathercode` fehlt, setze "Unbekannt"
-          weatherCondition:
-              (weatherData['weathercode']?.toString() ?? 'Unbekannt'),
+          // ⛅ Falls `weathercode` fehlt, setze 0 als Fallback
+          weatherCode: (weatherData['weathercode'] as int?) ?? 0,
 
           // 🌬 Falls `windspeed` fehlt, setze 0.0 als Fallback
           windSpeed: (weatherData['windspeed'] as num?)?.toDouble() ?? 0.0,

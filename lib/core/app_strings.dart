@@ -5,7 +5,7 @@ abstract class AppStrings {
   static const String currentTemperature = '🌡 Aktuelle Temperatur:';
 
   static String weatherCondition(String condition) {
-    return '🌤 Wetterlage: $condition';
+    return 'Wetterlage: $condition';
   }
 
   static String windSpeed(double speed) {
