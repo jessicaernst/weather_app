@@ -30,7 +30,7 @@ abstract class WeatherData with _$WeatherData, WeatherCodeInfo {
     hourlyRainProbabilities, // 🌧 Regenwahrscheinlichkeit pro Stunde (%)
     required List<String>
     hourlyTimes, // ⏰ Zeitpunkte für die stündlichen Werte (z.B. ["10:00", "11:00", ...])
-
+    required int utcOffsetSeconds, // 🕒 UTC-Offset in Sekunden
     required String
     timezone, // 🌍 Zeitzone des Standorts (z.B. "Europe/Berlin")
     // 🔥 7-Tage-Vorhersage (Liste von DailyWeather-Objekten, siehe `daily_weather.dart`)

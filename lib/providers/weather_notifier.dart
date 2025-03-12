@@ -131,6 +131,9 @@ class WeatherNotifier extends _$WeatherNotifier {
         weatherData: correctedWeather,
       );
 
+      _log.info(
+        '📌 Korrigierte Stundenzeiten vor UI-Update: ${correctedWeather.hourlyTimes}',
+      );
       state = AsyncValue.data(newState);
 
       return newState;

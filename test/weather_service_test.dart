@@ -105,6 +105,7 @@ void main() {
               weatherCode: 2,
             ),
           ],
+          utcOffsetSeconds: 0,
         );
 
         // 📡 Simuliere die API-Response im Repository
@@ -135,34 +136,60 @@ void main() {
 
     // ❌ Test: `fetchWeather` soll eine **Exception** auslösen, wenn die API 404 zurückgibt.
     test(
-      '❌ fetchWeather löst eine Exception aus, wenn die API 404 zurückgibt',
+      '❌ fetchWeather speichert eine Exception im State, wenn die API 404 zurückgibt',
       () async {
         when(
           () => mockRepository.fetchWeatherData(any(), any()),
         ).thenThrow(Exception('404 Not Found'));
 
-        await expectLater(
-          () => container
-              .read(weatherNotifierProvider.notifier)
-              .fetchWeather(53.0793, 8.8017, 'Bremen'),
-          throwsA(isA<Exception>()),
+        final notifier = container.read(weatherNotifierProvider.notifier);
+        await notifier.fetchWeather(53.0793, 8.8017, 'Bremen');
+
+        // ✅ AsyncValue<WeatherState> extrahieren
+        final state = container.read(weatherNotifierProvider);
+
+        state.when(
+          data: (weatherState) {
+            expect(weatherState.errorMessage, isNotNull);
+            expect(
+              weatherState.errorMessage.toString(),
+              contains('404 Not Found'),
+            );
+          },
+          loading: () => fail('State should not be loading.'),
+          error: (error, stack) {
+            expect(error.toString(), contains('404 Not Found'));
+          },
         );
       },
     );
 
     // ❌ Test: `fetchWeather` soll eine **Exception** auslösen, wenn ein Netzwerkfehler auftritt.
     test(
-      '❌ fetchWeather löst eine Exception aus, wenn ein Netzwerkfehler auftritt',
+      '❌ fetchWeather speichert eine Exception im State, wenn ein Netzwerkfehler auftritt',
       () async {
         when(
           () => mockRepository.fetchWeatherData(any(), any()),
         ).thenThrow(Exception('Network error'));
 
-        await expectLater(
-          () => container
-              .read(weatherNotifierProvider.notifier)
-              .fetchWeather(53.0793, 8.8017, 'Bremen'),
-          throwsA(isA<Exception>()),
+        final notifier = container.read(weatherNotifierProvider.notifier);
+        await notifier.fetchWeather(53.0793, 8.8017, 'Bremen');
+
+        // ✅ `AsyncValue<WeatherState>` auslesen
+        final state = container.read(weatherNotifierProvider);
+
+        state.when(
+          data: (weatherState) {
+            expect(weatherState.errorMessage, isNotNull);
+            expect(
+              weatherState.errorMessage.toString(),
+              contains('Network error'),
+            );
+          },
+          loading: () => fail('State should not be loading.'),
+          error: (error, stack) {
+            expect(error.toString(), contains('Network error'));
+          },
         );
       },
     );

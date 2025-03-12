@@ -29,6 +29,9 @@ class WeatherService {
     // 🕒 **Zeitzoneninformationen aus der API holen**
     final String timezoneId = jsonData['timezone'] ?? 'UTC';
 
+    // 🌍 Zeitzonen-Offset in Sekunden aus der API holen
+    final int utcOffsetSeconds = (jsonData['utc_offset_seconds'] as int?) ?? 0;
+
     try {
       // 🌍 **Korrekte Zeitzone anhand der API-Daten holen**
       tz.Location location;
@@ -131,6 +134,9 @@ class WeatherService {
         // ⏰ Falls `timezone` fehlt, setzen wir **"UTC" als Standardwert**.
         timezone: timezoneId,
 
+        // 🕒 Der UTC-Offset in Sekunden (z. B. 7200 für Mitteleuropäische Sommerzeit).
+        utcOffsetSeconds: utcOffsetSeconds,
+
         // 📅 Falls `dailyWeather` fehlt, setzen wir eine **leere Liste** als Fallback.
         dailyWeather: dailyForecast,
       );
@@ -147,6 +153,7 @@ class WeatherService {
         hourlyRainProbabilities: [],
         hourlyTimes: [],
         timezone: 'UTC',
+        utcOffsetSeconds: utcOffsetSeconds,
         dailyWeather: [],
       );
     }

@@ -24,6 +24,7 @@ mixin _$WeatherData {
  List<double> get hourlyTemperature;// 🌡 Temperaturen pro Stunde (Liste von °C-Werten)
  List<double> get hourlyRainProbabilities;// 🌧 Regenwahrscheinlichkeit pro Stunde (%)
  List<String> get hourlyTimes;// ⏰ Zeitpunkte für die stündlichen Werte (z.B. ["10:00", "11:00", ...])
+ int get utcOffsetSeconds;// 🕒 UTC-Offset in Sekunden
  String get timezone;// 🌍 Zeitzone des Standorts (z.B. "Europe/Berlin")
 // 🔥 7-Tage-Vorhersage (Liste von DailyWeather-Objekten, siehe `daily_weather.dart`)
  List<DailyWeather> get dailyWeather;
@@ -39,16 +40,16 @@ $WeatherDataCopyWith<WeatherData> get copyWith => _$WeatherDataCopyWithImpl<Weat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeatherData&&(identical(other.location, location) || other.location == location)&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.weatherCode, weatherCode) || other.weatherCode == weatherCode)&&(identical(other.windSpeed, windSpeed) || other.windSpeed == windSpeed)&&const DeepCollectionEquality().equals(other.hourlyTemperature, hourlyTemperature)&&const DeepCollectionEquality().equals(other.hourlyRainProbabilities, hourlyRainProbabilities)&&const DeepCollectionEquality().equals(other.hourlyTimes, hourlyTimes)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&const DeepCollectionEquality().equals(other.dailyWeather, dailyWeather));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeatherData&&(identical(other.location, location) || other.location == location)&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.weatherCode, weatherCode) || other.weatherCode == weatherCode)&&(identical(other.windSpeed, windSpeed) || other.windSpeed == windSpeed)&&const DeepCollectionEquality().equals(other.hourlyTemperature, hourlyTemperature)&&const DeepCollectionEquality().equals(other.hourlyRainProbabilities, hourlyRainProbabilities)&&const DeepCollectionEquality().equals(other.hourlyTimes, hourlyTimes)&&(identical(other.utcOffsetSeconds, utcOffsetSeconds) || other.utcOffsetSeconds == utcOffsetSeconds)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&const DeepCollectionEquality().equals(other.dailyWeather, dailyWeather));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,location,temperature,weatherCode,windSpeed,const DeepCollectionEquality().hash(hourlyTemperature),const DeepCollectionEquality().hash(hourlyRainProbabilities),const DeepCollectionEquality().hash(hourlyTimes),timezone,const DeepCollectionEquality().hash(dailyWeather));
+int get hashCode => Object.hash(runtimeType,location,temperature,weatherCode,windSpeed,const DeepCollectionEquality().hash(hourlyTemperature),const DeepCollectionEquality().hash(hourlyRainProbabilities),const DeepCollectionEquality().hash(hourlyTimes),utcOffsetSeconds,timezone,const DeepCollectionEquality().hash(dailyWeather));
 
 @override
 String toString() {
-  return 'WeatherData(location: $location, temperature: $temperature, weatherCode: $weatherCode, windSpeed: $windSpeed, hourlyTemperature: $hourlyTemperature, hourlyRainProbabilities: $hourlyRainProbabilities, hourlyTimes: $hourlyTimes, timezone: $timezone, dailyWeather: $dailyWeather)';
+  return 'WeatherData(location: $location, temperature: $temperature, weatherCode: $weatherCode, windSpeed: $windSpeed, hourlyTemperature: $hourlyTemperature, hourlyRainProbabilities: $hourlyRainProbabilities, hourlyTimes: $hourlyTimes, utcOffsetSeconds: $utcOffsetSeconds, timezone: $timezone, dailyWeather: $dailyWeather)';
 }
 
 
@@ -59,7 +60,7 @@ abstract mixin class $WeatherDataCopyWith<$Res>  {
   factory $WeatherDataCopyWith(WeatherData value, $Res Function(WeatherData) _then) = _$WeatherDataCopyWithImpl;
 @useResult
 $Res call({
- String location, double temperature, int weatherCode, double windSpeed, List<double> hourlyTemperature, List<double> hourlyRainProbabilities, List<String> hourlyTimes, String timezone, List<DailyWeather> dailyWeather
+ String location, double temperature, int weatherCode, double windSpeed, List<double> hourlyTemperature, List<double> hourlyRainProbabilities, List<String> hourlyTimes, int utcOffsetSeconds, String timezone, List<DailyWeather> dailyWeather
 });
 
 
@@ -76,7 +77,7 @@ class _$WeatherDataCopyWithImpl<$Res>
 
 /// Create a copy of WeatherData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? location = null,Object? temperature = null,Object? weatherCode = null,Object? windSpeed = null,Object? hourlyTemperature = null,Object? hourlyRainProbabilities = null,Object? hourlyTimes = null,Object? timezone = null,Object? dailyWeather = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? location = null,Object? temperature = null,Object? weatherCode = null,Object? windSpeed = null,Object? hourlyTemperature = null,Object? hourlyRainProbabilities = null,Object? hourlyTimes = null,Object? utcOffsetSeconds = null,Object? timezone = null,Object? dailyWeather = null,}) {
   return _then(_self.copyWith(
 location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as String,temperature: null == temperature ? _self.temperature : temperature // ignore: cast_nullable_to_non_nullable
@@ -85,7 +86,8 @@ as int,windSpeed: null == windSpeed ? _self.windSpeed : windSpeed // ignore: cas
 as double,hourlyTemperature: null == hourlyTemperature ? _self.hourlyTemperature : hourlyTemperature // ignore: cast_nullable_to_non_nullable
 as List<double>,hourlyRainProbabilities: null == hourlyRainProbabilities ? _self.hourlyRainProbabilities : hourlyRainProbabilities // ignore: cast_nullable_to_non_nullable
 as List<double>,hourlyTimes: null == hourlyTimes ? _self.hourlyTimes : hourlyTimes // ignore: cast_nullable_to_non_nullable
-as List<String>,timezone: null == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
+as List<String>,utcOffsetSeconds: null == utcOffsetSeconds ? _self.utcOffsetSeconds : utcOffsetSeconds // ignore: cast_nullable_to_non_nullable
+as int,timezone: null == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
 as String,dailyWeather: null == dailyWeather ? _self.dailyWeather : dailyWeather // ignore: cast_nullable_to_non_nullable
 as List<DailyWeather>,
   ));
@@ -98,7 +100,7 @@ as List<DailyWeather>,
 @JsonSerializable()
 
 class _WeatherData extends WeatherData {
-  const _WeatherData({required this.location, required this.temperature, required this.weatherCode, required this.windSpeed, required final  List<double> hourlyTemperature, required final  List<double> hourlyRainProbabilities, required final  List<String> hourlyTimes, required this.timezone, required final  List<DailyWeather> dailyWeather}): _hourlyTemperature = hourlyTemperature,_hourlyRainProbabilities = hourlyRainProbabilities,_hourlyTimes = hourlyTimes,_dailyWeather = dailyWeather,super._();
+  const _WeatherData({required this.location, required this.temperature, required this.weatherCode, required this.windSpeed, required final  List<double> hourlyTemperature, required final  List<double> hourlyRainProbabilities, required final  List<String> hourlyTimes, required this.utcOffsetSeconds, required this.timezone, required final  List<DailyWeather> dailyWeather}): _hourlyTemperature = hourlyTemperature,_hourlyRainProbabilities = hourlyRainProbabilities,_hourlyTimes = hourlyTimes,_dailyWeather = dailyWeather,super._();
   factory _WeatherData.fromJson(Map<String, dynamic> json) => _$WeatherDataFromJson(json);
 
 @override final  String location;
@@ -138,6 +140,8 @@ class _WeatherData extends WeatherData {
 }
 
 // ⏰ Zeitpunkte für die stündlichen Werte (z.B. ["10:00", "11:00", ...])
+@override final  int utcOffsetSeconds;
+// 🕒 UTC-Offset in Sekunden
 @override final  String timezone;
 // 🌍 Zeitzone des Standorts (z.B. "Europe/Berlin")
 // 🔥 7-Tage-Vorhersage (Liste von DailyWeather-Objekten, siehe `daily_weather.dart`)
@@ -164,16 +168,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WeatherData&&(identical(other.location, location) || other.location == location)&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.weatherCode, weatherCode) || other.weatherCode == weatherCode)&&(identical(other.windSpeed, windSpeed) || other.windSpeed == windSpeed)&&const DeepCollectionEquality().equals(other._hourlyTemperature, _hourlyTemperature)&&const DeepCollectionEquality().equals(other._hourlyRainProbabilities, _hourlyRainProbabilities)&&const DeepCollectionEquality().equals(other._hourlyTimes, _hourlyTimes)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&const DeepCollectionEquality().equals(other._dailyWeather, _dailyWeather));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WeatherData&&(identical(other.location, location) || other.location == location)&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.weatherCode, weatherCode) || other.weatherCode == weatherCode)&&(identical(other.windSpeed, windSpeed) || other.windSpeed == windSpeed)&&const DeepCollectionEquality().equals(other._hourlyTemperature, _hourlyTemperature)&&const DeepCollectionEquality().equals(other._hourlyRainProbabilities, _hourlyRainProbabilities)&&const DeepCollectionEquality().equals(other._hourlyTimes, _hourlyTimes)&&(identical(other.utcOffsetSeconds, utcOffsetSeconds) || other.utcOffsetSeconds == utcOffsetSeconds)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&const DeepCollectionEquality().equals(other._dailyWeather, _dailyWeather));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,location,temperature,weatherCode,windSpeed,const DeepCollectionEquality().hash(_hourlyTemperature),const DeepCollectionEquality().hash(_hourlyRainProbabilities),const DeepCollectionEquality().hash(_hourlyTimes),timezone,const DeepCollectionEquality().hash(_dailyWeather));
+int get hashCode => Object.hash(runtimeType,location,temperature,weatherCode,windSpeed,const DeepCollectionEquality().hash(_hourlyTemperature),const DeepCollectionEquality().hash(_hourlyRainProbabilities),const DeepCollectionEquality().hash(_hourlyTimes),utcOffsetSeconds,timezone,const DeepCollectionEquality().hash(_dailyWeather));
 
 @override
 String toString() {
-  return 'WeatherData(location: $location, temperature: $temperature, weatherCode: $weatherCode, windSpeed: $windSpeed, hourlyTemperature: $hourlyTemperature, hourlyRainProbabilities: $hourlyRainProbabilities, hourlyTimes: $hourlyTimes, timezone: $timezone, dailyWeather: $dailyWeather)';
+  return 'WeatherData(location: $location, temperature: $temperature, weatherCode: $weatherCode, windSpeed: $windSpeed, hourlyTemperature: $hourlyTemperature, hourlyRainProbabilities: $hourlyRainProbabilities, hourlyTimes: $hourlyTimes, utcOffsetSeconds: $utcOffsetSeconds, timezone: $timezone, dailyWeather: $dailyWeather)';
 }
 
 
@@ -184,7 +188,7 @@ abstract mixin class _$WeatherDataCopyWith<$Res> implements $WeatherDataCopyWith
   factory _$WeatherDataCopyWith(_WeatherData value, $Res Function(_WeatherData) _then) = __$WeatherDataCopyWithImpl;
 @override @useResult
 $Res call({
- String location, double temperature, int weatherCode, double windSpeed, List<double> hourlyTemperature, List<double> hourlyRainProbabilities, List<String> hourlyTimes, String timezone, List<DailyWeather> dailyWeather
+ String location, double temperature, int weatherCode, double windSpeed, List<double> hourlyTemperature, List<double> hourlyRainProbabilities, List<String> hourlyTimes, int utcOffsetSeconds, String timezone, List<DailyWeather> dailyWeather
 });
 
 
@@ -201,7 +205,7 @@ class __$WeatherDataCopyWithImpl<$Res>
 
 /// Create a copy of WeatherData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? location = null,Object? temperature = null,Object? weatherCode = null,Object? windSpeed = null,Object? hourlyTemperature = null,Object? hourlyRainProbabilities = null,Object? hourlyTimes = null,Object? timezone = null,Object? dailyWeather = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? location = null,Object? temperature = null,Object? weatherCode = null,Object? windSpeed = null,Object? hourlyTemperature = null,Object? hourlyRainProbabilities = null,Object? hourlyTimes = null,Object? utcOffsetSeconds = null,Object? timezone = null,Object? dailyWeather = null,}) {
   return _then(_WeatherData(
 location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as String,temperature: null == temperature ? _self.temperature : temperature // ignore: cast_nullable_to_non_nullable
@@ -210,7 +214,8 @@ as int,windSpeed: null == windSpeed ? _self.windSpeed : windSpeed // ignore: cas
 as double,hourlyTemperature: null == hourlyTemperature ? _self._hourlyTemperature : hourlyTemperature // ignore: cast_nullable_to_non_nullable
 as List<double>,hourlyRainProbabilities: null == hourlyRainProbabilities ? _self._hourlyRainProbabilities : hourlyRainProbabilities // ignore: cast_nullable_to_non_nullable
 as List<double>,hourlyTimes: null == hourlyTimes ? _self._hourlyTimes : hourlyTimes // ignore: cast_nullable_to_non_nullable
-as List<String>,timezone: null == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
+as List<String>,utcOffsetSeconds: null == utcOffsetSeconds ? _self.utcOffsetSeconds : utcOffsetSeconds // ignore: cast_nullable_to_non_nullable
+as int,timezone: null == timezone ? _self.timezone : timezone // ignore: cast_nullable_to_non_nullable
 as String,dailyWeather: null == dailyWeather ? _self._dailyWeather : dailyWeather // ignore: cast_nullable_to_non_nullable
 as List<DailyWeather>,
   ));

@@ -4,6 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:weather_app/core/app_strings.dart';
 import 'package:weather_app/presentation/widgets/hourly_forecast_card.dart';
 import 'package:weather_app/providers/weather_notifier.dart';
+import 'dart:math';
 
 // Logger für Debugging und Fehleranalyse
 final Logger _logger = Logger('HourlyForecast');
@@ -67,19 +68,23 @@ class HourlyForecast extends ConsumerWidget {
         }
 
         // 🕰 **Aktuelle Stunde ermitteln**
-        final int currentHour = DateTime.now().hour;
-        int startIndex = 0;
+        // Sicherstellen, dass DateTime.now() in der richtigen Zeitzone ist
+        final nowUtc = DateTime.now().toUtc();
+        final timezoneOffset = Duration(seconds: weatherData.utcOffsetSeconds);
+        final nowLocal = nowUtc.add(timezoneOffset);
+        final int currentHour = nowLocal.hour;
 
-        for (int i = 0; i < weatherData.hourlyTimes.length; i++) {
-          final int hour = int.parse(weatherData.hourlyTimes[i].split(':')[0]);
-          if (hour >= currentHour) {
-            startIndex = i;
-            break;
-          }
+        int startIndex = weatherData.hourlyTimes.indexWhere((time) {
+          final int hour = int.parse(time.split(':')[0]);
+          return hour >= currentHour;
+        });
+
+        // Falls kein passender Index gefunden wurde, nimm das erste Element
+        if (startIndex == -1) {
+          startIndex = 0;
         }
 
-        _logger.info('🔢 Berechneter Startindex: $startIndex');
-        _logger.info('📌 UI bekommt Stundenzeiten: ${weatherData.hourlyTimes}');
+        _logger.info('✅ Berechneter Startindex: $startIndex');
 
         return Column(
           children: [
@@ -92,15 +97,10 @@ class HourlyForecast extends ConsumerWidget {
               height: 100,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 24,
+                itemCount: min(24, weatherData.hourlyTimes.length - startIndex),
                 itemBuilder: (context, index) {
-                  final int actualIndex = startIndex + index;
-
-                  if (actualIndex >= weatherData.hourlyTimes.length ||
-                      actualIndex >=
-                          weatherData.hourlyRainProbabilities.length) {
-                    return const SizedBox();
-                  }
+                  final int actualIndex =
+                      (startIndex + index) % weatherData.hourlyTimes.length;
 
                   final String timeLabel =
                       (index == 0)
