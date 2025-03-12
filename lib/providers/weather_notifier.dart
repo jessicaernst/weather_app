@@ -104,62 +104,41 @@ class WeatherNotifier extends _$WeatherNotifier {
     double longitude,
     String locationName,
   ) async {
-    // Setze den Ladezustand
     state = const AsyncValue.loading();
 
-    // Rufe Wetterdaten von der API ab
-    final jsonData = await _repository.fetchWeatherData(latitude, longitude);
-    final timezoneId = jsonData['timezone'] ?? 'UTC';
+    try {
+      final jsonData = await _repository.fetchWeatherData(latitude, longitude);
+      final timezoneId = jsonData['timezone'] ?? 'UTC';
 
-    _log.info('🌎 Standort: $locationName');
-    _log.info('🕒 API gibt Zeitzone zurück: $timezoneId');
+      final weather = _service.parseWeatherData(jsonData, locationName);
+      final List<String> correctedTimes =
+          weather.hourlyTimes
+              .map((utcTime) => convertUtcToLocal(utcTime, timezoneId))
+              .toList();
 
-    // Wetterdaten aus der API parsen
-    final weather = _service.parseWeatherData(jsonData, locationName);
+      final correctedWeather = weather.copyWith(hourlyTimes: correctedTimes);
 
-    _log.info('⏳ Original-Zeiten aus der API: ${weather.hourlyTimes}');
+      await LocationService.saveLastLocation(
+        latitude,
+        longitude,
+        true,
+        locationName,
+      );
 
-    // **Korrekte Ortszeiten berechnen**
-    final List<String> correctedTimes =
-        weather.hourlyTimes.map((utcTime) {
-          return convertUtcToLocal(utcTime, timezoneId);
-        }).toList();
-
-    final correctedWeather = weather.copyWith(hourlyTimes: correctedTimes);
-
-    _log.info('✅ Korrigierte Zeiten für $locationName: $correctedTimes');
-
-    // Speichere den Standort für zukünftige Aufrufe
-    await LocationService.saveLastLocation(
-      latitude,
-      longitude,
-      true,
-      locationName,
-    );
-
-    _log.info('✅ Wetter für $locationName geladen & gespeichert.');
-
-    _log.info(
-      '🧐 Vor dem Setzen des States: ${state.value?.weatherData?.hourlyTimes}',
-    );
-
-    state = AsyncValue.data(
-      WeatherState(
+      final newState = WeatherState(
         selectedCity: locationName,
         useGeolocation: true,
         weatherData: correctedWeather,
-      ),
-    );
+      );
 
-    _log.info(
-      '✅ Nach dem Setzen des States: ${state.value?.weatherData?.hourlyTimes}',
-    );
+      state = AsyncValue.data(newState);
 
-    _log.info(
-      '✅ Wetter-Status aktualisiert. Endgültige Stundenzeiten für UI: ${state.value?.weatherData?.hourlyTimes}',
-    );
-
-    return state.value!;
+      return newState;
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+      _log.severe('❌ Fehler beim Laden der Wetterdaten: $e');
+      return WeatherState(errorMessage: e.toString());
+    }
   }
 
   /// 🕒 **Konvertiert eine UTC-Zeit (`HH:mm`) in die lokale Zeit der angegebenen Zeitzone**
