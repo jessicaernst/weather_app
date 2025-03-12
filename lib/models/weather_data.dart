@@ -24,7 +24,6 @@ abstract class WeatherData with _$WeatherData {
     required int
     weatherCode, // 🌤 Wetter-Code für das Wetter-Icon (z.B. 3 = bewölkt)
     required double windSpeed, // 💨 Windgeschwindigkeit in km/h
-    required double humidity, // 💦 Luftfeuchtigkeit in %
     // 📌 Stündliche Vorhersagewerte (für die nächsten 24 Stunden)
     required List<double>
     hourlyTemperature, // 🌡 Temperaturen pro Stunde (Liste von °C-Werten)

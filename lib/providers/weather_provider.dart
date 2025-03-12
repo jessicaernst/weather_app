@@ -306,10 +306,6 @@ class WeatherNotifier extends _$WeatherNotifier {
           // 🌬 Falls `windspeed` fehlt, setze 0.0 als Fallback
           windSpeed: (weatherData['windspeed'] as num?)?.toDouble() ?? 0.0,
 
-          // 💧 Falls `relativehumidity_2m` fehlt, setze 0.0 als Fallback
-          humidity:
-              (weatherData['relativehumidity_2m'] as num?)?.toDouble() ?? 0.0,
-
           // 📊 Falls `hourlyTemperature` fehlt, setze eine leere Liste als Fallback
           hourlyTemperature:
               hourlyTemps.isNotEmpty ? hourlyTemps.sublist(startIndex) : [],

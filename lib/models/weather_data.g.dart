@@ -11,7 +11,6 @@ _WeatherData _$WeatherDataFromJson(Map<String, dynamic> json) => _WeatherData(
   temperature: (json['temperature'] as num).toDouble(),
   weatherCode: (json['weatherCode'] as num).toInt(),
   windSpeed: (json['windSpeed'] as num).toDouble(),
-  humidity: (json['humidity'] as num).toDouble(),
   hourlyTemperature:
       (json['hourlyTemperature'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
@@ -35,7 +34,6 @@ Map<String, dynamic> _$WeatherDataToJson(_WeatherData instance) =>
       'temperature': instance.temperature,
       'weatherCode': instance.weatherCode,
       'windSpeed': instance.windSpeed,
-      'humidity': instance.humidity,
       'hourlyTemperature': instance.hourlyTemperature,
       'hourlyRainProbabilities': instance.hourlyRainProbabilities,
       'hourlyTimes': instance.hourlyTimes,
