@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/data/latest_10y.dart' as tz;
 import 'package:weather_app/app/weather_app.dart';
-import 'package:weather_app/core/utils/logging_setup.dart';
+import 'package:weather_app/services/logging_service.dart';
+
+final _log = LoggingService('main');
 
 void main() async {
-  // Setup logging muss vor dem Start der App erfolgen
-  LoggerUtil.setupLogging();
+  // Die Initialisierung des LoggingServices muss vor dem Start der App erfolgen
+  _log.init();
 
   // Initialisiere die Flutter-App
   WidgetsFlutterBinding.ensureInitialized();
